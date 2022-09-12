@@ -37,7 +37,6 @@ class StructureSelect extends React.Component{
             width: ${CANVAS_WIDTH}px;
             max-height: 50px;
             background-color: lightgrey;
-            border-radius: 8px;
             transition: max-height 0.3s ease-out;
             margin: 61.6px 0 60.8px;
           }
@@ -113,15 +112,17 @@ class StructureSelect extends React.Component{
             </div>
           ) : (
             <div
-              className={`add-more ${!this.props.isSaved && "pointer-disabled"}`}
+              className={`add-more ${!this.props.isPrevSaved && "pointer-disabled"}`}
               onClick={() => {
-                this.setState({ showSelector: true });
-                this.props.setSlideData(state => ([...state, { id: state.length, type: null} ]));
+                if (this.props.isPrevSaved) {
+                  this.setState({ showSelector: true });
+                  this.props.setSlideData(state => ([...state, { id: state.length, type: null} ]));
+                }
               }}
               onMouseEnter={() => this.setState({ addMoreHover: true })}
               onMouseLeave={() => this.setState({ addMoreHover: false })}
             >
-              {!this.props.isSaved && this.state.addMoreHover ? "you have unsaved work above" : "+ add more"}
+              {!this.props.isPrevSaved && this.state.addMoreHover ? "you have unsaved work above" : "+ add more"}
             </div>
           )}
         </article>

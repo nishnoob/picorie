@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import ImageSlide from './ImageSlide';
+import ShareWindow from './ShareWindow';
 
 const Parent = () => {
+  const [share, setShare] = useState(false);
   const [slideData, setSlideData] = useState([
     {
       id: 0,
@@ -12,7 +14,20 @@ const Parent = () => {
       type: null,
     }
   ]);
-  console.log("slideData", slideData)
+
+  useEffect(() => {
+    const albumData = localStorage.getItem('album');
+    if (albumData) {
+      setSlideData(JSON.parse(albumData));
+    }
+  }, [])
+
+  useEffect(() => saveToStorage(slideData), [slideData])
+  
+  const saveToStorage = (val) => {
+    localStorage.setItem('album', JSON.stringify(val));
+  }
+
   return (
     <>
       <style jsx>
@@ -21,14 +36,21 @@ const Parent = () => {
             margin: 0;
           }
           header {
-            padding: 20px 48px;
+            padding: 8px 48px;
             display: flex;
             justify-content: space-between;
+            box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.2);
+          }
+          header div {
+            padding: 6px 9px;
           }
           .work-space {
             max-width: 1000px;
             margin: 0 auto;
             padding-bottom: 128px;
+          }
+          :global(body::-webkit-scrollbar) {
+            display: none;
           }
           .album-title {
             font-size: 48px;
@@ -37,26 +59,43 @@ const Parent = () => {
           [contenteditable]:focus {
             outline: 0 solid transparent;
           }
+          .share-btn {
+            border: 1px solid transparent;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: border 0.1s ease;
+          }
+          .share-btn:hover {
+            border-color: grey
+          }
         `}
       </style>
-      <div>
+      <div className="parent">
         <header>
           <div>album builder</div>
-          <div>share</div>
+          <div className="share-btn" onClick={() => setShare(true)}>preview</div>
         </header>
-        <div className='work-space' >
+        <div className='work-space'>
           {/* <div className='album-title' contentEditable={true}>Sunday Mass</div> */}
-          {slideData.map(el => (
+          {slideData.map((el, index) => (
             <ImageSlide
               key={el.id}
               id={el.id}
               type={el.type}
-              setSlideData={setSlideData}
+              setSlideData={(val) => {
+                setSlideData(val);
+              }}
               veryFirst={el.id === 0}
-              isSaved={Boolean(el.sid)}
+              isSaved={Boolean(el.output)}
+              slideData={slideData}
+              prevIndex={index - 1}
+              output={el.output}
             />
           ))}
         </div>
+        {share && (
+          <ShareWindow slideData={slideData} onClose={() => setShare(false)} />
+        )}
       </div>
     </>
   );

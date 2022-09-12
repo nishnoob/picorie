@@ -1,7 +1,7 @@
 import React from 'react';
 import Konva from 'konva';
 import StructureSelect from './StructureSelect';
-import { COLLAGE_CONFIG, NEW_SLIDE_ID } from './utils';
+import { CANVAS_HEIGHT, CANVAS_WIDTH, COLLAGE_CONFIG } from './utils';
 
 export default class ImageSlide extends React.Component {
   constructor(props) {
@@ -34,7 +34,7 @@ export default class ImageSlide extends React.Component {
   }
   
   init = () => {
-    if (document.getElementById(`slide-container-${this.props.id}`)) {
+    if (document.getElementById(`slide-container-${this.props.id}`) && !this.props.isSaved) {
       let groupVar = null;
       let rectVar = null;
       let textVar = null;
@@ -46,6 +46,17 @@ export default class ImageSlide extends React.Component {
         height: COLLAGE_CONFIG[this.props.type].canvasHeight,
       });
       this.layerRef.current = new Konva.Layer();
+      const bgLayer = new Konva.Layer();
+      const bgRectangle = new Konva.Rect({
+        fill: 'white',
+        x: 0,
+        y: 0,
+        width: CANVAS_WIDTH,
+        height: CANVAS_HEIGHT,
+      });
+      bgLayer.add(bgRectangle);
+      this.stageRef.current.add(bgLayer);
+
       COLLAGE_CONFIG[this.props.type]?.frames.forEach(el => {
         groupVar = new Konva.Group({
           clip: {
@@ -342,44 +353,60 @@ export default class ImageSlide extends React.Component {
     });
   }
 
-  handlePreview = () => this.setState(state => {
-    if (!state.preview) {
-      this.state.transformer.nodes([]);
-      this.layerRef.current.add(this.state.transformer);
-    }
-    Object.values(this.state.elements).forEach(el => {
-      if (el.img) {
-        el.img.draggable(state.preview);
-        el.group.add(el.img);
-        this.layerRef.current.add(el.group);
-      } else if (el.node) {
-        el.node.draggable(state.preview);
-        this.layerRef.current.add(el.node);      }
-    });
-    // COLLAGE_TEMPLATE.forEach(el => {
-    //   if (this.state.elements[el.name].img) {
-    //     this.state.elements[el.name].img.draggable(state.preview);
-    //     this.state.elements[el.name].group.add(this.state[el.name].img);
-    //     this.layerRef.current.add(this.state[el.name].group);
-    //   } else if (this.state.elements[el.name].node) {
-    //     this.state.elements[el.name].node.draggable(state.preview);
-    //     this.layerRef.current.add(this.state.elements[el.name].node);
-    //   }
-    // })
-    this.stageRef.current.add(this.layerRef.current);
-    return ({ preview: !state.preview });
-  });
+  // handlePreview = () => this.setState(state => {
+  //   if (!state.preview) {
+  //     this.state.transformer.nodes([]);
+  //     this.layerRef.current.add(this.state.transformer);
+  //   }
+  //   Object.values(this.state.elements).forEach(el => {
+  //     if (el.img) {
+  //       el.img.draggable(state.preview);
+  //       el.group.add(el.img);
+  //       this.layerRef.current.add(el.group);
+  //     } else if (el.node) {
+  //       el.node.draggable(state.preview);
+  //       this.layerRef.current.add(el.node);      }
+  //   });
+  //   // COLLAGE_TEMPLATE.forEach(el => {
+  //   //   if (this.state.elements[el.name].img) {
+  //   //     this.state.elements[el.name].img.draggable(state.preview);
+  //   //     this.state.elements[el.name].group.add(this.state[el.name].img);
+  //   //     this.layerRef.current.add(this.state[el.name].group);
+  //   //   } else if (this.state.elements[el.name].node) {
+  //   //     this.state.elements[el.name].node.draggable(state.preview);
+  //   //     this.layerRef.current.add(this.state.elements[el.name].node);
+  //   //   }
+  //   // })
+  //   this.stageRef.current.add(this.layerRef.current);
+  //   return ({ preview: !state.preview });
+  // });
 
   handleSave = () => {
-
+    this.state.transformer.nodes([]);
+    this.addToLayerAndRedraw(this.state.transformer);
+    const dataURL = this.stageRef.current.toDataURL();
+    this.props.setSlideData(state => state.map(el => el.id === this.props.id ? { ...el, output: dataURL } : el ));
+    this.stageRef.current.destroy();
   };
 
   render () {
+    const parsedId = parseInt(this.props.id + 1, 10);
+    const orderStr = `${parsedId < 10 ? "0" : ""}${parsedId}`;
     return (
       <>
         <style jsx>
           {`
             .wrapper {
+              position: relative;
+            }
+            .order-str {
+              font-size: 84px;
+              color: lightgrey;
+              position: absolute;
+              right: -70px;
+              top: 48px;
+              font-style: italic;
+              z-Index: 0;
             }
             .wrapper:hover .controls button,
             .wrapper:hover .controls input,
@@ -388,7 +415,7 @@ export default class ImageSlide extends React.Component {
               opacity: 1;
             }
             .controls {
-              padding: 16px 0;
+              padding: 8px 0;
               display: flex;
               justify-content: space-between;
             }
@@ -432,8 +459,14 @@ export default class ImageSlide extends React.Component {
             .controls .save-btn {
               opacity: 1;
             }
+            .controls .saved-tag {
+              color: green;
+              font-size: 14px;
+              letter-spacing: 0.5px;
+            }
             .slide-container {
-              box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.25);
+              /* box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.25); */
+              background-color: white;
             }
             input[type=file] {
               display: none;
@@ -447,22 +480,26 @@ export default class ImageSlide extends React.Component {
               pointer-events: all !important;
               background-color: transparent;
             }
+            .opacity-0 {
+              opacity: 0;
+            }
           `}
         </style>
-        <div className='wrapper'>
+        <div className="wrapper">
+          {this.props.type && <div className="order-str">{orderStr}</div>}
           {!this.props.type ? (
               <StructureSelect
                 id={this.props.id}
                 veryFirst={this.props.veryFirst}
                 type={this.props.type}
                 isSaved={this.props.isSaved}
+                isPrevSaved={this.props.slideData[this.props.prevIndex]?.output}
                 setSlideData={this.props.setSlideData}
                 setElements={val => this.setState(state => ({ elements: [...state.elements, val] }))}
-                // structured={Object.keys(this.state.elements).length > 0}
               />
             ) : (
             <>
-              <div className='controls'>
+              <div className={`controls ${this.props.isSaved && 'opacity-0'}`}>
                 <button onClick={() => this.props.setSlideData(state => state.map(el => el.id === this.props.id ? { id: el.id, type: null } : el ))}>
                   &#x21BA; reset
                 </button>
@@ -486,19 +523,30 @@ export default class ImageSlide extends React.Component {
                 </div>
               </div>
               <article id={`slide-container-${this.props.id}`} className='slide-container'>
+                {this.props.isSaved && (
+                  <img src={this.props.output} />
+                )}
               </article>
               <div className='controls'>
-                <button
+                <div></div>
+                {/* <button
                   onClick={this.handlePreview}
                 >
                   {this.state.preview ? "edit" : "preview"}
-                </button>
-                <button
-                  className='save-btn'
-                  onClick={this.handleSave}
-                >
-                  save
-                </button>
+                </button> */}
+                {this.props.isSaved ? (
+                  <div className='saved-tag'>
+                    &#10059; saved
+                  </div>
+                  ) : (
+                  <button
+                    className='save-btn'
+                    onClick={this.handleSave}
+                    disabled={this.props.isSaved}
+                  >
+                    save
+                  </button>
+                )}
               </div>
               <input type="file" ref={this.uploadRef} onChange={(e) => this.setSelectedImage(e.target.files[0])} />
             </>
