@@ -1,7 +1,7 @@
 import React from 'react';
 import Konva from 'konva';
 import StructureSelect from './StructureSelect';
-import { CANVAS_HEIGHT, CANVAS_WIDTH, COLLAGE_CONFIG } from './utils';
+import { BORDER_WIDTH, CANVAS_HEIGHT, CANVAS_WIDTH, COLLAGE_CONFIG } from './utils';
 
 export default class ImageSlide extends React.Component {
   constructor(props) {
@@ -9,6 +9,7 @@ export default class ImageSlide extends React.Component {
 
     this.state = {
       whiteText: false,
+      structureBorder: false,
       preview: false,
       elements: {},
     };
@@ -22,6 +23,10 @@ export default class ImageSlide extends React.Component {
   componentDidMount() {
     this.init();
   }
+
+  calculateWidth = (val1, val2, opposite = false) => opposite ?
+    this.state.structureBorder ? val1 - val2 : val1 + val2:
+    this.state.structureBorder ? val1 + val2 : val1 - val2;
   
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.type !== this.props.type && this.props.type) {
@@ -31,7 +36,34 @@ export default class ImageSlide extends React.Component {
       this.state.elements.text1.node.fill(this.state.whiteText ? 'white' : 'black');
       this.addToLayerAndRedraw(this.state.elements.text1.node);
     }
+    if (prevState.structureBorder !== this.state.structureBorder && this.state.elements.pic1?.group) {
+      Object.values(this.state.elements).forEach((el, index) => {
+        if (el.group) {
+          const clipX = index === 0 ? this.calculateWidth(el.group.clipX(), BORDER_WIDTH) : el.group.clipX();
+          const clipY = this.calculateWidth(el.group.clipY(), BORDER_WIDTH);
+          const clipWidth = index === 0 ? this.calculateWidth(el.group.clipWidth(), 2 * BORDER_WIDTH, true) : this.calculateWidth(el.group.clipWidth(), BORDER_WIDTH, true);
+          const clipHeight = this.calculateWidth(el.group.clipHeight(), 2 * BORDER_WIDTH, true);
+          el.group.clipX(clipX)
+          el.group.clipY(clipY)
+          el.group.clipHeight(clipHeight)
+          el.group.clipWidth(clipWidth)
+          this.addToLayerAndRedraw(el.group);
+        }
+      })
+      // this.state.elements.pic1.group.stroke('white');
+      // this.state.elements.pic1.group.strokeWidth('5');
+    }
   }
+
+  addCursorStyle = (node, cursorStyle = 'pointer') => {
+    node.on('mouseenter', () => {
+      this.stageRef.current.container().style.cursor = cursorStyle;
+    });
+
+    node.on('mouseleave', () => {
+      this.stageRef.current.container().style.cursor = 'default';
+    });
+  };
   
   init = () => {
     if (document.getElementById(`slide-container-${this.props.id}`) && !this.props.isSaved) {
@@ -80,9 +112,8 @@ export default class ImageSlide extends React.Component {
             this.setState({ selectedImage: el });
           }
         })
-        rectVar.on('mouseenter', () => {
-          this.stageRef.current.container().style.cursor = 'pointer';
-        });
+        this.addCursorStyle(rectVar);
+        
         textVar = new Konva.Text({
           text: 'Click to upload',
           x: el.x + ( el.frameWidth / 2 - 70),
@@ -116,7 +147,7 @@ export default class ImageSlide extends React.Component {
     this.stageRef.current.add(this.layerRef.current);
   }
 
-  setSelectedImage = (file) => {
+  addImage = (file) => {
     try {
       const img = new Image();
       img.src = URL.createObjectURL(file);
@@ -138,6 +169,7 @@ export default class ImageSlide extends React.Component {
           height: newHeight,
           draggable: true,
         })
+        this.addCursorStyle(img1, 'move');
         img1.on('mousedown', () => {
           if (!this.state.preview) {
             this.state.transformer.nodes([img1]);
@@ -156,7 +188,7 @@ export default class ImageSlide extends React.Component {
         this.state.elements[this.state.selectedImage.name].group.destroyChildren();
         this.state.transformer.nodes([img1]);
         this.state.elements[this.state.selectedImage.name].group.add(img1);
-        this.addToLayerAndRedraw(this.state.transformer, this.state[this.state.selectedImage.name].group);
+        this.addToLayerAndRedraw(this.state.transformer, this.state.elements[this.state.selectedImage.name].group);
       }
     }
     catch (e) {
@@ -169,8 +201,8 @@ export default class ImageSlide extends React.Component {
       text: 'Some text here',
       fontFamily: "serif",
       fill: this.state.whiteText ? 'white' : 'black',
-      x: 50,
-      y: 80,
+      x: 500,
+      y: 300,
       fontSize: 20,
       draggable: true,
       width: 200,
@@ -384,6 +416,7 @@ export default class ImageSlide extends React.Component {
   handleSave = () => {
     this.state.transformer.nodes([]);
     this.addToLayerAndRedraw(this.state.transformer);
+    // const dataURL = this.stageRef.current.toDataURL({ pixelRatio: 2 });
     const dataURL = this.stageRef.current.toDataURL();
     this.props.setSlideData(state => state.map(el => el.id === this.props.id ? { ...el, output: dataURL } : el ));
     this.stageRef.current.destroy();
@@ -400,13 +433,21 @@ export default class ImageSlide extends React.Component {
               position: relative;
             }
             .order-str {
-              font-size: 84px;
+              position: relative;
+              font-size: 54px;
               color: lightgrey;
               position: absolute;
-              right: -70px;
-              top: 48px;
+              right: 10px;
+              top: 8px;
               font-style: italic;
-              z-Index: 0;
+              z-Index: 1;
+            }
+            .order-str sup {
+              position: absolute;
+              top: 0px;
+              left: -4px;
+              font-size: 24px;
+              font-weight: 900;
             }
             .wrapper:hover .controls button,
             .wrapper:hover .controls input,
@@ -465,8 +506,12 @@ export default class ImageSlide extends React.Component {
               letter-spacing: 0.5px;
             }
             .slide-container {
-              /* box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.25); */
+              box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.15);
               background-color: white;
+              transform-origin: bottom left;
+              transform: rotate(90deg) translateX(-${CANVAS_HEIGHT}px);
+              height: ${CANVAS_HEIGHT}px;
+              width: ${CANVAS_WIDTH}px;
             }
             input[type=file] {
               display: none;
@@ -483,10 +528,29 @@ export default class ImageSlide extends React.Component {
             .opacity-0 {
               opacity: 0;
             }
+            .dummy-mob-backdrop {
+              height: ${Math.abs(CANVAS_HEIGHT - CANVAS_WIDTH)}px;
+              width: ${CANVAS_HEIGHT}px;
+            }
+            @media (min-width: 992px) {
+              .wrapper {
+                height: auto;
+              }
+              .order-str {
+                font-size: 84px;
+                right: -70px;
+                top: 48px;
+              }
+              .slide-container {
+                transform: rotate(0deg) translateX(0px);
+                height: auto;
+                width: auto;
+              }
+            }
           `}
         </style>
         <div className="wrapper">
-          {this.props.type && <div className="order-str">{orderStr}</div>}
+          {this.props.type && <div className="order-str"><sup>#</sup>{orderStr}</div>}
           {!this.props.type ? (
               <StructureSelect
                 id={this.props.id}
@@ -512,6 +576,14 @@ export default class ImageSlide extends React.Component {
                     />
                     white text
                   </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={this.state.structureBorder}
+                      onChange={() => this.setState(state => ({ structureBorder: !state.structureBorder }))}
+                    />
+                    borders
+                  </label>
                   <button
                     disabled={this.state.preview || this.state.elements.text1}
                     onClick={() => {
@@ -524,9 +596,10 @@ export default class ImageSlide extends React.Component {
               </div>
               <article id={`slide-container-${this.props.id}`} className='slide-container'>
                 {this.props.isSaved && (
-                  <img src={this.props.output} />
-                )}
+                  <img src={this.props.output} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} />
+                  )}
               </article>
+              <div className="dummy-mob-backdrop mob--only" />
               <div className='controls'>
                 <div></div>
                 {/* <button
@@ -548,7 +621,7 @@ export default class ImageSlide extends React.Component {
                   </button>
                 )}
               </div>
-              <input type="file" ref={this.uploadRef} onChange={(e) => this.setSelectedImage(e.target.files[0])} />
+              <input type="file" ref={this.uploadRef} onChange={(e) => this.addImage(e.target.files[0])} />
             </>
           )}
         </div>

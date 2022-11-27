@@ -34,7 +34,6 @@ class StructureSelect extends React.Component{
       <>
         <style jsx>{`
           article {
-            width: ${CANVAS_WIDTH}px;
             max-height: 50px;
             background-color: lightgrey;
             transition: max-height 0.3s ease-out;
@@ -57,6 +56,7 @@ class StructureSelect extends React.Component{
           }
           .options-container {
             display: flex;
+            flex-direction: column;
             justify-content: space-around;
             align-items: center;
             height: ${CANVAS_HEIGHT}px;
@@ -89,6 +89,14 @@ class StructureSelect extends React.Component{
           .pointer-disabled {
             cursor: not-allowed;
             pointer-events: all !important;
+          }
+          @media (min-width: 992px) {
+            article {
+              width: ${CANVAS_WIDTH};
+            }
+            .options-container {
+              flex-direction: row;
+            }
           }
         `}</style>
         <article className={this.state.showSelector && 'selector-mode'}>

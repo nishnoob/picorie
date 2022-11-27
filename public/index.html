@@ -9,6 +9,19 @@
 </head>
 
 <body>
+  <style>
+    .desktop--only {
+      display: none;
+    }
+    @media (min-width: 992px) {
+      .mob--only {
+        display: none;
+      }
+      .desktop--only {
+        display: auto;
+      }
+    }
+  </style>
   <div id="root"></div>
   <noscript>
     You need to enable JavaScript to run this app.

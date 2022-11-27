@@ -34,6 +34,7 @@ const Parent = () => {
         {`
           :global(body) {
             margin: 0;
+            background-color: #f9f9f9;
           }
           header {
             padding: 8px 48px;
@@ -45,9 +46,7 @@ const Parent = () => {
             padding: 6px 9px;
           }
           .work-space {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding-bottom: 128px;
+            padding: 48px 16px 128px;
           }
           :global(body::-webkit-scrollbar) {
             display: none;
@@ -67,6 +66,13 @@ const Parent = () => {
           }
           .share-btn:hover {
             border-color: grey
+          }
+          @media (min-width: 992px) {
+            .work-space {
+              max-width: 1000px;
+              margin: 0 auto;
+              padding-bottom: 0 0 128px;
+            }
           }
         `}
       </style>
