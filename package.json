@@ -22,6 +22,8 @@
     "webpack-dev-server": "^4.10.1"
   },
   "dependencies": {
+    "@auth0/nextjs-auth0": "^1.9.2",
+    "airtable": "^0.11.5",
     "canvas": "^2.10.2",
     "konva": "^8.3.12",
     "next": "^13.0.5",

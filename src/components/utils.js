@@ -1,9 +1,11 @@
-const isDesktopWindow = () => window.innerWidth > 992;
+export const isServer = () => typeof window === "undefined";
+
+const isDesktopWindow = () => isServer() ? true : window.innerWidth > 992;
 
 export const BORDER_WIDTH = 7;
-const screenWidthCorrectedMOB = window.innerWidth - 32;
-export const CANVAS_WIDTH = isDesktopWindow() ? 1000 : (1000/562 * screenWidthCorrectedMOB);
-export const CANVAS_HEIGHT = isDesktopWindow() ? 562 : screenWidthCorrectedMOB;
+const screenWidthCorrectedMOB = isServer() ? 0 : (window.innerWidth - 32);
+export const CANVAS_WIDTH = (isDesktopWindow() || isServer()) ? 1000 : (1000/562 * screenWidthCorrectedMOB);
+export const CANVAS_HEIGHT = (isDesktopWindow() || isServer()) ? 562 : screenWidthCorrectedMOB;
 export const NEW_SLIDE_ID = "#";
 export const COLLAGE_CONFIG = {
   1: {

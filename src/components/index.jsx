@@ -1,28 +1,41 @@
+import { useUser } from '@auth0/nextjs-auth0';
 import React, { useEffect, useState } from 'react';
 import ImageSlide from './ImageSlide';
 import ShareWindow from './ShareWindow';
 
-const Parent = () => {
+const Parent = ({ albumId }) => {
+  const { user, error, isLoading } = useUser();
   const [share, setShare] = useState(false);
-  const [slideData, setSlideData] = useState([
-    {
-      id: 0,
-      type: null,
-    },
-    {
-      id: 1,
-      type: null,
-    }
-  ]);
+  const [slideData, setSlideData] = useState([]);
 
   useEffect(() => {
-    const albumData = localStorage.getItem('album');
-    if (albumData) {
-      setSlideData(JSON.parse(albumData));
+    if (albumId) {
+      getAlbumData();
     }
-  }, [])
+  }, [albumId])
 
   useEffect(() => saveToStorage(slideData), [slideData])
+
+  const getAlbumData = async () => {
+    let data = await fetch(`http://localhost:3000/api/self/photo/${albumId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    data = await data.json();
+    setSlideData([
+      {
+        id: 0,
+        type: null,
+      },
+      {
+        id: 1,
+        type: null,
+      }
+    ]);
+    console.log("albums", data);
+  };
   
   const saveToStorage = (val) => {
     localStorage.setItem('album', JSON.stringify(val));
@@ -42,8 +55,12 @@ const Parent = () => {
             justify-content: space-between;
             box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.2);
           }
-          header div {
-            padding: 6px 9px;
+          header .title {
+            letter-spacing: 4px;
+            font-size: 21px;
+            color: var(--primary-color);
+            left: 50%;
+            transform: translateX(-50%);
           }
           .work-space {
             padding: 48px 16px 128px;
@@ -58,14 +75,9 @@ const Parent = () => {
           [contenteditable]:focus {
             outline: 0 solid transparent;
           }
-          .share-btn {
-            border: 1px solid transparent;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: border 0.1s ease;
-          }
-          .share-btn:hover {
-            border-color: grey
+          .auth-btn {
+            text-decoration: none;
+            color: black;
           }
           @media (min-width: 992px) {
             .work-space {
@@ -77,9 +89,14 @@ const Parent = () => {
         `}
       </style>
       <div className="parent">
-        <header>
-          <div>album builder</div>
-          <div className="share-btn" onClick={() => setShare(true)}>preview</div>
+        <header className='align-center relative'>
+          {user?.email ? (
+            <div className='text-14'>{user?.email}</div>
+          )  : (
+            <a className='standard-btn hidden auth-btn ml-8' href="/api/auth/login">login</a>
+          )}
+          <div className='absolute title'>picorie</div>
+          <div className="standard-btn" onClick={() => setShare(true)}>preview</div>
         </header>
         <div className='work-space'>
           {/* <div className='album-title' contentEditable={true}>Sunday Mass</div> */}

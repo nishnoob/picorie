@@ -1,0 +1,57 @@
+
+/* INIT */
+:root {
+  --primary-color: #be9500;
+}
+* {
+  font-family: "Bookman Old Style", Georgia, serif;
+}
+
+/* MISC */
+.absolute {
+  position: absolute;
+}
+.relative {
+  position: relative;
+}
+.d-flex {
+  display: flex;
+}
+.align-center {
+  align-items: center;
+}
+
+/* TEXT */
+
+.text-18 {
+  font-size: 18px;
+}
+.text-14 {
+  font-size: 14px;
+}
+
+/* MARGINS */
+
+.ml-8 {
+  margin-left: 8px;
+}
+
+/* COMPONENTS */
+
+.standard-btn {
+  border: 1px solid grey;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border 0.1s ease;
+  padding: 5px 8px 8px;
+  font-size: 14px;
+}
+.standard-btn:hover {
+  box-shadow: rgba(0, 0, 0, 0.1) 0 1.95px 1px;
+}
+.standard-btn.hidden {
+  border: 1px solid transparent;
+}
+.standard-btn.hidden:hover {
+  border-color: grey
+}
