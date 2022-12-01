@@ -418,7 +418,7 @@ export default class ImageSlide extends React.Component {
     this.addToLayerAndRedraw(this.state.transformer);
     // const dataURL = this.stageRef.current.toDataURL({ pixelRatio: 2 });
     const dataURL = this.stageRef.current.toDataURL();
-    this.props.setSlideData(state => state.map(el => el.id === this.props.id ? { ...el, output: dataURL } : el ));
+    this.props.setSlideData(state => state.map(el => el.id === this.props.id ? { ...el, output: dataURL } : el ), { type: this.props.type, url: dataURL });
     this.stageRef.current.destroy();
   };
 

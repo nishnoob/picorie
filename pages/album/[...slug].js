@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { isServer } from "../../src/components/utils.js";
+import { isServer } from "../../src/components/utils";
 import Component from "../../src/components/index.jsx";
 import { useRouter } from "next/router.js";
 

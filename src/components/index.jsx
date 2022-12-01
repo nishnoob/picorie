@@ -2,6 +2,7 @@ import { useUser } from '@auth0/nextjs-auth0';
 import React, { useEffect, useState } from 'react';
 import ImageSlide from './ImageSlide';
 import ShareWindow from './ShareWindow';
+import fetcher from './utils/fetcher';
 
 const Parent = ({ albumId }) => {
   const { user, error, isLoading } = useUser();
@@ -14,17 +15,19 @@ const Parent = ({ albumId }) => {
     }
   }, [albumId])
 
-  useEffect(() => saveToStorage(slideData), [slideData])
+  // useEffect(() => saveToStorage(slideData), [slideData])
 
   const getAlbumData = async () => {
-    let data = await fetch(`http://localhost:3000/api/self/photo/${albumId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    data = await data.json();
-    setSlideData([
+    
+    let data = await fetcher(`/self/photo/${albumId}`);
+    setSlideData(data.length > 0 ?
+      [
+        ...data,
+        {
+          id: 0,
+          type: null,
+        },
+      ] : [
       {
         id: 0,
         type: null,
@@ -34,11 +37,12 @@ const Parent = ({ albumId }) => {
         type: null,
       }
     ]);
-    console.log("albums", data);
   };
   
-  const saveToStorage = (val) => {
-    localStorage.setItem('album', JSON.stringify(val));
+  const saveToStorage = async (val) => {
+    let res = await fetcher('/self/photo/save');
+    console.log("res", res)
+    // localStorage.setItem('album', JSON.stringify(val));
   }
 
   return (
@@ -100,13 +104,15 @@ const Parent = ({ albumId }) => {
         </header>
         <div className='work-space'>
           {/* <div className='album-title' contentEditable={true}>Sunday Mass</div> */}
-          {slideData.map((el, index) => (
+          {slideData.length ? slideData.map((el, index) => (
             <ImageSlide
               key={el.id}
               id={el.id}
               type={el.type}
-              setSlideData={(val) => {
+              setSlideData={async (val, sVal) => {
                 setSlideData(val);
+                let res = await fetcher('/self/photo/save', { method: 'POST', body: sVal });
+                console.log("res", res)
               }}
               veryFirst={el.id === 0}
               isSaved={Boolean(el.output)}
@@ -114,7 +120,9 @@ const Parent = ({ albumId }) => {
               prevIndex={index - 1}
               output={el.output}
             />
-          ))}
+          )) : (
+            <div>Loading</div>
+          )}
         </div>
         {share && (
           <ShareWindow slideData={slideData} onClose={() => setShare(false)} />
