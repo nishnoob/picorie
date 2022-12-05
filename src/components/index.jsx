@@ -1,5 +1,6 @@
 import { useUser } from '@auth0/nextjs-auth0';
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import ImageSlide from './ImageSlide';
 import ShareWindow from './ShareWindow';
 import fetcher from './utils/fetcher';
@@ -106,19 +107,22 @@ const Parent = ({ albumId }) => {
           {/* <div className='album-title' contentEditable={true}>Sunday Mass</div> */}
           {slideData.length ? slideData.map((el, index) => (
             <ImageSlide
+            albumId={albumId}
               key={el.id}
               id={el.id}
               type={el.type}
-              setSlideData={async (val, sVal) => {
-                setSlideData(val);
+              url={el.url}
+              setSlideData={setSlideData}
+              fetchCall={async (sVal) => {
                 let res = await fetcher('/self/photo/save', { method: 'POST', body: sVal });
-                console.log("res", res)
+                if (res.length) {
+                  toast.success("picture saved!");
+                }
               }}
               veryFirst={el.id === 0}
-              isSaved={Boolean(el.output)}
+              isSaved={Boolean(el.url)}
               slideData={slideData}
               prevIndex={index - 1}
-              output={el.output}
             />
           )) : (
             <div>Loading</div>

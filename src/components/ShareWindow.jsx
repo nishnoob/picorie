@@ -48,8 +48,8 @@ class ShareWindow extends React.Component {
         `}</style>
         <div className="backdrop">
           <div className="content">
-            {this.props.slideData.map(el => el.output && (
-              <img key={el.id} src={el.output} />
+            {this.props.slideData.map(el => el.url && (
+              <img key={el.id} src={el.url} />
             ))}
           </div>
           {this.props.onClose && <div className="close-btn" onClick={this.props.onClose}>&#10005;</div>}

@@ -2,6 +2,7 @@ import React from 'react';
 import Konva from 'konva';
 import StructureSelect from './StructureSelect';
 import { BORDER_WIDTH, CANVAS_HEIGHT, CANVAS_WIDTH, COLLAGE_CONFIG } from './utils';
+import UploadImageToS3 from './imgeUpload';
 
 export default class ImageSlide extends React.Component {
   constructor(props) {
@@ -413,17 +414,31 @@ export default class ImageSlide extends React.Component {
   //   return ({ preview: !state.preview });
   // });
 
-  handleSave = () => {
+  handleSave = async () => {
     this.state.transformer.nodes([]);
     this.addToLayerAndRedraw(this.state.transformer);
     // const dataURL = this.stageRef.current.toDataURL({ pixelRatio: 2 });
     const dataURL = this.stageRef.current.toDataURL();
-    this.props.setSlideData(state => state.map(el => el.id === this.props.id ? { ...el, output: dataURL } : el ), { type: this.props.type, url: dataURL });
-    this.stageRef.current.destroy();
+    const epoch = `_uploads_/${Date.now()}.jpeg`;
+    UploadImageToS3(
+      dataURL,
+      epoch,
+      () => {
+        this.props.setSlideData(
+          state => state.map(el => el.id === this.props.id ? { ...el, url: dataURL } : el ),
+        )
+        this.props.fetchCall({
+          type: this.props.type,
+          url: `https://album-hosting.amirickbolchi.com.s3.amazonaws.com/${epoch}`,
+          album_id: [this.props.albumId],
+        })
+      }
+    );
+      this.stageRef.current.destroy();
   };
 
   render () {
-    const parsedId = parseInt(this.props.id + 1, 10);
+    const parsedId = parseInt(this.props.prevIndex + 2, 10);
     const orderStr = `${parsedId < 10 ? "0" : ""}${parsedId}`;
     return (
       <>
@@ -557,7 +572,7 @@ export default class ImageSlide extends React.Component {
                 veryFirst={this.props.veryFirst}
                 type={this.props.type}
                 isSaved={this.props.isSaved}
-                isPrevSaved={this.props.slideData[this.props.prevIndex]?.output}
+                isPrevSaved={this.props.slideData[this.props.prevIndex]?.url}
                 setSlideData={this.props.setSlideData}
                 setElements={val => this.setState(state => ({ elements: [...state.elements, val] }))}
               />
@@ -596,7 +611,7 @@ export default class ImageSlide extends React.Component {
               </div>
               <article id={`slide-container-${this.props.id}`} className='slide-container'>
                 {this.props.isSaved && (
-                  <img src={this.props.output} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} />
+                  <img src={this.props.url} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} />
                   )}
               </article>
               <div className="dummy-mob-backdrop mob--only" />
