@@ -3,6 +3,10 @@
 :root {
   --primary-color: #be9500;
 }
+body {
+  margin: 0;
+  background-color: #f9f9f9;
+}
 * {
   font-family: "Bookman Old Style", Georgia, serif;
 }
@@ -17,12 +21,21 @@
 .d-flex {
   display: flex;
 }
+.d-flex-col {
+  display: flex;
+  flex-direction: column;
+}
 .align-center {
   align-items: center;
 }
+.justify-center {
+  justify-content: center;
+}
 
 /* TEXT */
-
+.text-center {
+  text-align: center;
+}
 .text-18 {
   font-size: 18px;
 }

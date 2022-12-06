@@ -1,4 +1,6 @@
-const fetcher = (url, options = {}) => fetch(
+const fetcher = (url, options = {}) => {
+  
+  return fetch(
     `http://localhost:3000/api${url}`,
     {
       method: options.method || 'GET',
@@ -6,7 +8,7 @@ const fetcher = (url, options = {}) => fetch(
         'Content-Type': 'application/json',
         ...options.headers,
       },
-      body: JSON.stringify(options.body),
+      body: JSON.stringify(options.body) || undefined,
     },
   )
     .then(async response => {
@@ -25,5 +27,6 @@ const fetcher = (url, options = {}) => fetch(
     .catch(error => {
         console.error('There was an error!', error);
     });
+};
 
 export default fetcher;

@@ -1,7 +1,7 @@
 import React from 'react';
 import Konva from 'konva';
 import StructureSelect from './StructureSelect';
-import { BORDER_WIDTH, CANVAS_HEIGHT, CANVAS_WIDTH, COLLAGE_CONFIG } from './utils';
+import { BORDER_WIDTH, CANVAS_HEIGHT, CANVAS_WIDTH, COLLAGE_CONFIG } from '../../utils';
 import UploadImageToS3 from './imgeUpload';
 
 export default class ImageSlide extends React.Component {

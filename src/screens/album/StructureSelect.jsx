@@ -1,5 +1,5 @@
 import React from 'react';
-import { CANVAS_HEIGHT, CANVAS_WIDTH, COLLAGE_CONFIG, NEW_SLIDE_ID } from './utils';
+import { CANVAS_HEIGHT, CANVAS_WIDTH, COLLAGE_CONFIG, NEW_SLIDE_ID } from '../../utils';
 
 class StructureSelect extends React.Component{
   constructor(props) {
