@@ -10,6 +10,17 @@ body {
 * {
   font-family: "Bookman Old Style", Georgia, serif;
 }
+.desktop--only {
+  display: none;
+}
+@media (min-width: 992px) {
+  .mob--only {
+    display: none;
+  }
+  .desktop--only {
+    display: auto;
+  }
+}
 
 /* MISC */
 .absolute {

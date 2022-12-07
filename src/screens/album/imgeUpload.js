@@ -30,7 +30,7 @@ const UploadImageToS3 = (file, filepath, cb) => {
     Body: blobData,
     Bucket: S3_BUCKET,
     Key: filepath,
-    ContentType: 'image/jpeg',
+    'Content-Type': 'image/jpeg',
     ACL: 'public-read',
   };
 
