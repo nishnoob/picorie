@@ -16,7 +16,7 @@ const Library = ({  }) => {
   }, [isLoading])
 
   const getAlbumData = async () => {
-    let data = await fetcher(`/self/albums/${user.email}`);
+    let data = await fetcher(`/self/albums/${user?.email}`);
     toast("Success");
     if (data?.length) {
       setAlbums(data);
