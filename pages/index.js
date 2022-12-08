@@ -8,11 +8,11 @@ const HomePage = () => {
   const { user, isLoading } = useUser();
   const router = useRouter();
 
-  // useEffect(() => {
-  //   if ( !isLoading && user?.email ) {
-  //     router?.push('/library')
-  //   }
-  // }, [isLoading]);
+  useEffect(() => {
+    if ( !isLoading && user?.email ) {
+      router?.push('/library')
+    }
+  }, [isLoading]);
 
   return <Component />;
 };
