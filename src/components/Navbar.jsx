@@ -11,26 +11,30 @@ const Navbar = () => {
       <style jsx>
         {`
           header {
-            padding: 8px 48px;
+            padding: 20px 48px;
             display: flex;
             justify-content: space-between;
-            box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.2);
+            background: black;
           }
           header .title {
-            letter-spacing: 4px;
-            font-size: 21px;
+            letter-spacing: 8px;
+            font-size: 28px;
             color: var(--primary-color);
-            left: 50%;
-            transform: translateX(-50%);
+            padding: 2px 0px 6px 6px;
+          }
+          header button {
+            border-color: white;
+            background: transparent;
+            color: white;
           }
         `}
       </style>
       <>
         <header className='align-center relative'>
-          <div className='text-14'>{user?.email}</div>
-          <div className='absolute title'>picorie</div>
-          <div className="standard-btn" onClick={() => undefined}>preview</div>
-          {/* <div className="standard-btn" onClick={() => setShare(true)}>preview</div> */}
+          {/* <div className='text-14 text-white'>{user?.email}</div> */}
+          <div className='title'>picorie</div>
+          <button className="minimal-btn" onClick={() => undefined}>preview</button>
+          {/* <div className="minimal-btn" onClick={() => setShare(true)}>preview</div> */}
         </header>
         {/* {share && (
           <ShareWindow slideData={slideData} onClose={() => setShare(false)} />

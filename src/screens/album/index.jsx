@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 import ImageSlide from './ImageSlide';
 import fetcher from '../../utils/fetcher';
 import Navbar from '../../components/Navbar';
+import Loader from '../../components/Loader';
 
 const Album = ({ albumId }) => {
   const [slideData, setSlideData] = useState([]);
@@ -90,7 +91,9 @@ const Album = ({ albumId }) => {
               prevIndex={index - 1}
             />
           )) : (
-            <div>Loading</div>
+            <div className='loader-container'>
+              <Loader />
+            </div>
           )}
         </div>
       </div>

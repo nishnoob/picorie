@@ -30,12 +30,12 @@ const UploadImageToS3 = (file, filepath, cb) => {
     Body: blobData,
     Bucket: S3_BUCKET,
     Key: filepath,
-    'Content-Type': 'image/jpeg',
+    ContentType: 'image/jpeg',
     ACL: 'public-read',
   };
 
   return myBucket.putObject(params)
-    .on('complete', (evt) => {
+    .on('success', (evt) => {
       cb();
       // setProgress(Math.round((evt.loaded / evt.total) * 100))
     })

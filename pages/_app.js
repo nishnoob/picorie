@@ -1,5 +1,6 @@
 import React from 'react';
 import { UserProvider } from '@auth0/nextjs-auth0';
+import { Toaster } from 'react-hot-toast';
 
 import '../public/global.css';
 import Airtable from 'airtable';
@@ -18,6 +19,18 @@ export default function App({ Component, pageProps }) {
       <UserProvider>
         <Component {...pageProps} />
       </UserProvider>
+      <Toaster
+        position='bottom-right'
+        containerStyle={{
+          right: 50,
+          bottom: 50,
+        }}
+        toastOptions={{
+          style: {
+            background: '#b3a26565',
+          },
+        }}
+      />
     </>
   );
 }

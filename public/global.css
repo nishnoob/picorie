@@ -10,6 +10,12 @@ body {
 * {
   font-family: "Bookman Old Style", Georgia, serif;
 }
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
 .desktop--only {
   display: none;
 }
@@ -44,17 +50,27 @@ body {
 }
 
 /* TEXT */
+.text-white {
+  color: #FFF;
+}
 .text-center {
   text-align: center;
-}
-.text-18 {
-  font-size: 18px;
 }
 .text-14 {
   font-size: 14px;
 }
+.text-18 {
+  font-size: 18px;
+}
+.text-24 {
+  font-size: 24px;
+}
 
 /* MARGINS */
+
+.mt-36 {
+  margin-top: 36px;
+}
 
 .ml-8 {
   margin-left: 8px;
@@ -63,19 +79,54 @@ body {
 /* COMPONENTS */
 
 .standard-btn {
+  cursor: pointer;
+  transition: all 0.1s ease;
+  padding: 10px 11px 12px;
+  font-size: 14px;
+  background-color: black;
+  color: white;
+  border-width: 1px;
+  font-size: 18px;
+}
+.standard-btn:hover {
+  background-color: white;
+  color: black;
+}
+.standard-btn[disabled],
+.standard-btn[disabled]:hover {
+  cursor: not-allowed;
+  opacity: 0.4;
+  background-color: black;
+  color: white;
+}
+
+.minimal-btn {
   border: 1px solid grey;
-  border-radius: 4px;
   cursor: pointer;
   transition: border 0.1s ease;
   padding: 5px 8px 8px;
   font-size: 14px;
+  background-color: white;
 }
-.standard-btn:hover {
-  box-shadow: rgba(0, 0, 0, 0.1) 0 1.95px 1px;
-}
-.standard-btn.hidden {
+.minimal-btn.hidden {
   border: 1px solid transparent;
 }
-.standard-btn.hidden:hover {
-  border-color: grey
+
+.standard-input::placeholder {
+  color:rgb(173, 173, 173);
+  content: 'write here';
+}
+.standard-input {
+  border-width: 1px;
+  outline: none;
+  padding: 11px;
+  font-size: 16px;
+}
+
+.loader-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 35vh;
 }

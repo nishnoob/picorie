@@ -28,7 +28,7 @@ const HomeScreen = () => {
       <div className='wrapper d-flex-col align-center justify-center'>
         <div className='title'>picorie</div>
         <div
-          className='standard-btn auth-btn'
+          className='minimal-btn auth-btn'
           onClick={() => router.push('/api/auth/login')}
           // href="/api/auth/login"
         >

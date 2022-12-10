@@ -429,7 +429,7 @@ export default class ImageSlide extends React.Component {
         )
         this.props.fetchCall({
           type: this.props.type,
-          url: `https://album-hosting.amirickbolchi.com.s3.amazonaws.com/${epoch}`,
+          url: `https://s3.ap-south-1.amazonaws.com/album-hosting.amirickbolchi.com/${epoch}`,
           album_id: [this.props.albumId],
         })
       }

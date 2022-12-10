@@ -4,7 +4,32 @@ export default async (req, res) => {
   let option = req.query.option;
   let data = {};
 
-  if (option?.[0].indexOf("albums") >= 0) {
+  if (
+    option?.[0].indexOf("album") >= 0 &&
+    option?.[1].indexOf("create") >= 0
+  ){
+    try {
+      Airtable
+        .base('appbo8nzfBdKwOEoo')('albums')
+        .create([
+          {
+            fields: {
+              ...req.body,
+            },
+          }
+        ], (err, records) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          data = records.map(el => el.getId())
+          res.status(200).json(data);
+        });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ msg: "Something went wrong! 😕" });
+    }
+  } else if(option?.[0].indexOf("albums") >= 0) {
     try {
       data = await Airtable
         .base('appbo8nzfBdKwOEoo')('albums')
@@ -40,10 +65,10 @@ export default async (req, res) => {
           data = records.map(el => el.getId())
           res.status(200).json(data);
         });
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ msg: "Something went wrong! 😕" });
-      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ msg: "Something went wrong! 😕" });
+    }
   } else if (option?.[0].indexOf("photos") >= 0) {
     try {
       data = await Airtable
