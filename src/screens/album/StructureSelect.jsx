@@ -6,6 +6,7 @@ class StructureSelect extends React.Component{
     super(props);
     this.state = {
       showSelector: Boolean(this.props.type || this.props.veryFirst),
+      elementType: null,
       addMoreHover: false,
     };
   }
@@ -17,6 +18,9 @@ class StructureSelect extends React.Component{
   }
 
   icon_map = {
+    0: () => (
+      <div>{'Heading <h1/>'}</div>
+    ),
     1: () => (
       <div className="collage1"></div>
     ),

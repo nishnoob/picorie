@@ -29,7 +29,7 @@ const Album = ({ albumId }) => {
         type: null,
       },
       {
-        id: 1,
+        id: 0,
         type: null,
       }
     ]);
@@ -85,7 +85,7 @@ const Album = ({ albumId }) => {
               url={el.url}
               setSlideData={setSlideData}
               fetchCall={saveToStorage}
-              veryFirst={el.id === 0}
+              veryFirst={index === 0}
               isSaved={Boolean(el.url)}
               slideData={slideData}
               prevIndex={index - 1}
