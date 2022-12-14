@@ -112,7 +112,7 @@ const Library = ({  }) => {
                   <Link key={el.id} href={`/album/${el.id}`}>
                     <div className="album-card relative">
                       <img
-                        src="https://s3.ap-south-1.amazonaws.com/album-hosting.amirickbolchi.com/_uploads_/1670177562064.jpeg"
+                        src={el.cover?.[0] || `https://s3.ap-south-1.amazonaws.com/album-hosting.amirickbolchi.com/_uploads_/1670177562064.jpeg`}
                         width={300}
                         height={180}
                       />

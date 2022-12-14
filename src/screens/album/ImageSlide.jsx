@@ -612,10 +612,10 @@ export default class ImageSlide extends React.Component {
               <article id={`slide-container-${this.props.id}`} className='slide-container'>
                 {this.props.isSaved && (
                   <img src={this.props.url} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} />
-                  )}
+                )}
               </article>
               <div className="dummy-mob-backdrop mob--only" />
-              <div className='controls'>
+              {this.props.isCreator && <div className='controls'>
                 <div></div>
                 {/* <button
                   onClick={this.handlePreview}
@@ -635,7 +635,7 @@ export default class ImageSlide extends React.Component {
                     save
                   </button>
                 )}
-              </div>
+              </div>}
               <input type="file" ref={this.uploadRef} onChange={(e) => this.addImage(e.target.files[0])} />
             </>
           )}

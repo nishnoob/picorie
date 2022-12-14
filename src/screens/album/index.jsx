@@ -4,23 +4,26 @@ import ImageSlide from './ImageSlide';
 import fetcher from '../../utils/fetcher';
 import Navbar from '../../components/Navbar';
 import Loader from '../../components/Loader';
+import { useUser } from '@auth0/nextjs-auth0';
 
 const Album = ({ albumId }) => {
   const [slideData, setSlideData] = useState([]);
+  const { user, isLoading } = useUser();
+  const isCreator = Boolean(user?.email);
 
   useEffect(() => {
     if (albumId) {
       getAlbumData();
     }
-  }, [albumId])
+  }, [albumId]);
 
   const getAlbumData = async () => {
     let data = await fetcher(`/self/photos/${albumId}`);
-    setSlideData(data.length > 0 ?
+    setSlideData(isCreator ? data.length > 0 ?
       [
         ...data,
         {
-          id: 0,
+          id: 1,
           type: null,
         },
       ] : [
@@ -32,7 +35,7 @@ const Album = ({ albumId }) => {
         id: 0,
         type: null,
       }
-    ]);
+    ] : data);
   };
   
   const saveToStorage = async (sVal) => {
@@ -89,6 +92,7 @@ const Album = ({ albumId }) => {
               isSaved={Boolean(el.url)}
               slideData={slideData}
               prevIndex={index - 1}
+              isCreator={isCreator}
             />
           )) : (
             <div className='loader-container'>
