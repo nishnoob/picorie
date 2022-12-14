@@ -31,9 +31,9 @@ const Navbar = () => {
       </style>
       <>
         <header className='align-center relative'>
-          {/* <div className='text-14 text-white'>{user?.email}</div> */}
           <div className='title'>picorie</div>
-          <button className="minimal-btn" onClick={() => undefined}>preview</button>
+          <div className='text-14 text-white'>{user?.email}</div>
+          {/* {user?.email && <button className="minimal-btn" onClick={() => undefined}>preview</button>} */}
           {/* <div className="minimal-btn" onClick={() => setShare(true)}>preview</div> */}
         </header>
         {/* {share && (
