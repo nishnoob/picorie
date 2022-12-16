@@ -5,6 +5,7 @@ import fetcher from '../../utils/fetcher';
 import Navbar from '../../components/Navbar';
 import Loader from '../../components/Loader';
 import { useUser } from '@auth0/nextjs-auth0';
+import ElementEditor from './ElementEditor';
 
 const Album = ({ albumId }) => {
   const [slideData, setSlideData] = useState([]);
@@ -12,10 +13,10 @@ const Album = ({ albumId }) => {
   const isCreator = Boolean(user?.email);
 
   useEffect(() => {
-    if (albumId) {
+    if (albumId && !isLoading) {
       getAlbumData();
     }
-  }, [albumId]);
+  }, [albumId, isLoading]);
 
   const getAlbumData = async () => {
     let data = await fetcher(`/self/photos/${albumId}`);
@@ -28,7 +29,7 @@ const Album = ({ albumId }) => {
         },
       ] : [
       {
-        id: 0,
+        id: "#",
         type: null,
       },
       {
@@ -80,18 +81,14 @@ const Album = ({ albumId }) => {
         <div className='work-space'>
           {/* <div className='album-title' contentEditable={true}>Sunday Mass</div> */}
           {slideData.length ? slideData.map((el, index) => (
-            <ImageSlide
+            <ElementEditor
               albumId={albumId}
+              data={el}
               key={el.id}
-              id={el.id}
-              type={el.type}
-              url={el.url}
               setSlideData={setSlideData}
               fetchCall={saveToStorage}
               veryFirst={index === 0}
-              isSaved={Boolean(el.url)}
-              slideData={slideData}
-              prevIndex={index - 1}
+              isPrevSaved={Boolean(slideData[index-1]?.url)}
               isCreator={isCreator}
             />
           )) : (

@@ -1,5 +1,9 @@
-export const HeaderTextEditor = ({ data }) => {
-
+export const HeaderTextEditor = ({
+  data,
+  setSlideData = () => undefined,
+  handleSave = () => undefined,
+}) => {
+  const isSaved = data?.url;
   return (
     <>
       <style jsx>
@@ -16,16 +20,21 @@ export const HeaderTextEditor = ({ data }) => {
           }
           .header-text-container {
             background-color: lightgrey;
-            height: 200px;
-            width: 500px;
+            padding: 16px;
+          }
+          .header-text-container div {
+            outline: none;
+            width: 100%;
+            min-height: 100px;
+            font-size: 24px;
           }
           @media (min-width: 992px) {
           }
         `}
       </style>
       <>
-        <div className={`controls ${this.props.isSaved && 'opacity-0'}`}>
-          <button onClick={() => this.props.setSlideData(state => state.map(el => el.id === this.props.id ? { id: el.id, type: null } : el ))}>
+        <div className={`controls ${isSaved && 'opacity-0'}`}>
+          <button onClick={() => setSlideData(state => state.map(el => el.id === data.id ? { id: el.id, type: null } : el ))}>
             &#x21BA; reset
           </button>
         </div>
@@ -34,15 +43,15 @@ export const HeaderTextEditor = ({ data }) => {
         </article>
         <div className='controls'>
           <div></div>
-          {this.props.isSaved ? (
+          {isSaved ? (
             <div className='saved-tag'>
               &#10059; saved
             </div>
             ) : (
             <button
               className='save-btn'
-              onClick={this.handleSave}
-              disabled={this.props.isSaved}
+              onClick={handleSave}
+              disabled={isSaved}
             >
               save
             </button>

@@ -18,7 +18,7 @@ const Navbar = () => {
           }
           header .title {
             letter-spacing: 8px;
-            font-size: 28px;
+            font-size: 18px;
             color: var(--primary-color);
             padding: 2px 0px 6px 6px;
           }

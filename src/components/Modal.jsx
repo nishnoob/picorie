@@ -10,6 +10,7 @@ const Modal = ({ children, title, onClose = () => undefined }) => (
           bottom: 0;
           right: 0;
           background: #00000088;
+          z-index: 3;
         }
         .modal {
           min-width: 500px;

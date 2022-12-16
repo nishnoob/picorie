@@ -36,6 +36,7 @@ export default async (req, res) => {
         .select({
           view: "Grid view",
           filterByFormula: `{email} = '${option?.[1]}'`,
+          sort: [{field: "created", direction: "desc"}],
         })
         .firstPage();
       data = data.map(el => el.fields)
