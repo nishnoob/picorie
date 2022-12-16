@@ -180,7 +180,7 @@ export default class ElementEditor extends React.Component {
               setElements={val => this.setState(state => ({ elements: [...state.elements, val] }))}
             />
           ) : (
-            <HeaderTextEditor data={this.props.data} />
+            <HeaderTextEditor data={this.props.data} albumId={this.props.albumId} />
           )}
         </div>
       </>

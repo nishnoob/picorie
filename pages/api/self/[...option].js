@@ -85,6 +85,31 @@ export default async (req, res) => {
       console.error(error);
       res.status(500).json({ msg: "Something went wrong! 😕" });
     }
+  } else if (
+    option?.[0].indexOf("text") >= 0 &&
+    option?.[1].indexOf("save") >= 0
+   ) {
+    try {
+      Airtable
+        .base('appbo8nzfBdKwOEoo')('texts')
+        .create([
+          {
+            fields: {
+              ...req.body,
+            },
+          }
+        ], (err, records) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          data = records.map(el => el.getId())
+          res.status(200).json(data);
+        });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ msg: "Something went wrong! 😕" });
+    }
   } else {
     res.status(404).json({ msg: "Something went wrong! 😕" });
   }

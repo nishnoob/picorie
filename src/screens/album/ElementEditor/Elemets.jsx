@@ -1,9 +1,30 @@
+import { useState } from "react";
+import ContentEditable from "react-contenteditable";
+import { toast } from "react-hot-toast";
+import fetcher from "../../../utils/fetcher";
+
 export const HeaderTextEditor = ({
+  albumId,
   data,
   setSlideData = () => undefined,
-  handleSave = () => undefined,
 }) => {
+  const [value, setValue] = useState('');
   const isSaved = data?.url;
+
+  const handleSave = async () => {
+    let res = await fetcher('/self/text/save', { method: 'POST', body: {
+      content: value,
+      album_id: [albumId],
+    } });
+    if (res.length) {
+      toast.success("text saved!");
+    }
+  };
+
+  const handleChange = evt => {
+    setValue(evt.target.value);
+  };
+
   return (
     <>
       <style jsx>
@@ -22,7 +43,7 @@ export const HeaderTextEditor = ({
             background-color: lightgrey;
             padding: 16px;
           }
-          .header-text-container div {
+          .header-text-container :global(div) {
             outline: none;
             width: 100%;
             min-height: 100px;
@@ -39,7 +60,10 @@ export const HeaderTextEditor = ({
           </button>
         </div>
         <article className='header-text-container'>
-          <div contentEditable></div>
+          <ContentEditable
+            html={value}
+            onChange={handleChange}
+          />
         </article>
         <div className='controls'>
           <div></div>
