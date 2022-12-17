@@ -5,14 +5,16 @@ class StructureSelect extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
-      showSelector: Boolean(this.props.type || this.props.veryFirst),
+      showSelector: Boolean(this.props.data.type || this.props.veryFirst),
       elementType: null,
       addMoreHover: false,
     };
   }
+  
+  elementData = this.props.data;
 
   componentDidUpdate(prevProps) {
-    if (!this.props.type && this.props.id !== prevProps.id){
+    if (!this.elementData.type && this.elementData.id !== prevProps.id){
       this.setState({ showSelector: false });
     }
   }
@@ -112,8 +114,8 @@ class StructureSelect extends React.Component{
                   id={id}
                   onClick={() => this.props.setSlideData(
                     state => state.map(
-                      i => i.id == this.props.id ?
-                        { id: this.props.id, type: parseInt(id,10) }
+                      i => i.id == this.elementData.id ?
+                        { id: this.elementData.id, type: parseInt(id,10) }
                         : i
                     )
                   )}

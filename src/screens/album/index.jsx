@@ -19,7 +19,7 @@ const Album = ({ albumId }) => {
   }, [albumId, isLoading]);
 
   const getAlbumData = async () => {
-    let data = await fetcher(`/self/photos/${albumId}`);
+    let data = await fetcher(`/self/album/${albumId}`);
     setSlideData(isCreator ? data.length > 0 ?
       [
         ...data,
@@ -41,7 +41,10 @@ const Album = ({ albumId }) => {
   
   const saveToStorage = async (sVal) => {
     let res = await fetcher('/self/photo/save', { method: 'POST', body: sVal });
-    if (res.length) {
+    if (res?.[0]?.id) {
+      setSlideData(
+        state => state.map(el => el.id === this.props.id ? res?.[0] : el ),
+      )
       toast.success("picture saved!");
     }
   }
@@ -87,8 +90,9 @@ const Album = ({ albumId }) => {
               key={el.id}
               setSlideData={setSlideData}
               fetchCall={saveToStorage}
+              order={index}
               veryFirst={index === 0}
-              isPrevSaved={Boolean(slideData[index-1]?.url)}
+              isPrevSaved={Boolean(slideData[index-1]?.url || slideData[index-1]?.content)}
               isCreator={isCreator}
             />
           )) : (

@@ -1,23 +1,42 @@
 import { useState } from "react";
 import ContentEditable from "react-contenteditable";
 import { toast } from "react-hot-toast";
+import { ELEMENTS_ENUM } from ".";
 import fetcher from "../../../utils/fetcher";
 
 export const HeaderTextEditor = ({
   albumId,
   data,
+  order,
   setSlideData = () => undefined,
 }) => {
   const [value, setValue] = useState('');
-  const isSaved = data?.url;
+  const isSaved = data?.content;
 
   const handleSave = async () => {
     let res = await fetcher('/self/text/save', { method: 'POST', body: {
       content: value,
       album_id: [albumId],
+      order,
+      type: ELEMENTS_ENUM,
     } });
-    if (res.length) {
+    if (res?.[0]?.id) {
+      setSlideData(
+        state => state.map(el => el.id === data.id ? res?.[0] : el ),
+      )
       toast.success("text saved!");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (confirm("Want to delete?")) {
+        let res = await fetcher(`/self/text/delete/${data.id}`, { method: 'POST' });
+        if (res?.deleted) {
+          setSlideData(
+            state => state.filter(el => el.id !== data.id),
+          )
+          toast.success("text deleted!");
+        }
     }
   };
 
@@ -29,48 +48,64 @@ export const HeaderTextEditor = ({
     <>
       <style jsx>
         {`
+          .wrapper {
+            pointer-events: ${isSaved ? 'none' : 'auto'};
+          }
+          .wrapper:hover {
+            background-color: ${isSaved ? 'lightgrey' : 'none'};
+          }
+          .wrapper :global(.minimal-btn.danger) {
+            pointer-events: auto;
+          }
           .controls {
-            padding: 8px 0;
+            padding: 8px;
             display: flex;
             justify-content: space-between;
           }
-          .controls .saved-tag {
-            color: green;
-            font-size: 14px;
-            letter-spacing: 0.5px;
-          }
-          .header-text-container {
+          .header-text-container:not(.saved) {
             background-color: lightgrey;
             padding: 16px;
+          }
+          .header-text-container h1 {
+            font-size: 38px;
           }
           .header-text-container :global(div) {
             outline: none;
             width: 100%;
             min-height: 100px;
             font-size: 24px;
+            text-align: center;
           }
           @media (min-width: 992px) {
           }
         `}
       </style>
-      <>
+      <div className="wrapper">
         <div className={`controls ${isSaved && 'opacity-0'}`}>
           <button onClick={() => setSlideData(state => state.map(el => el.id === data.id ? { id: el.id, type: null } : el ))}>
             &#x21BA; reset
           </button>
         </div>
-        <article className='header-text-container'>
-          <ContentEditable
-            html={value}
-            onChange={handleChange}
-          />
+        <article className={`header-text-container ${isSaved && 'saved'}`}>
+          {isSaved ? (
+            <h1 className="text-center" dangerouslySetInnerHTML={{__html: data.content}}></h1>
+          ) : (
+            <ContentEditable
+            
+              html={value}
+              onChange={handleChange}
+            />
+          )}
         </article>
         <div className='controls'>
           <div></div>
           {isSaved ? (
-            <div className='saved-tag'>
-              &#10059; saved
-            </div>
+            <button
+              className='minimal-btn danger'
+              onClick={handleDelete}
+            >
+              delete
+            </button>
             ) : (
             <button
               className='save-btn'
@@ -81,7 +116,7 @@ export const HeaderTextEditor = ({
             </button>
           )}
         </div>
-      </>
+      </div>
     </>
   );
 };

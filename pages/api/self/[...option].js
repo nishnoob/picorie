@@ -3,6 +3,7 @@ import Airtable from "airtable";
 export default async (req, res) => {
   let option = req.query.option;
   let data = {};
+  let data1 = {};
 
   if (
     option?.[0].indexOf("album") >= 0 &&
@@ -22,7 +23,7 @@ export default async (req, res) => {
             console.error(err);
             return;
           }
-          data = records.map(el => el.getId())
+          data = records.map(el => el.fields)
           res.status(200).json(data);
         });
     } catch (error) {
@@ -40,6 +41,28 @@ export default async (req, res) => {
         })
         .firstPage();
       data = data.map(el => el.fields)
+      res.status(200).json(data);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ msg: "Something went wrong! 😕" });
+    }
+  } else if (option?.[0].indexOf("album") >= 0) {
+    try {
+      data = await Airtable
+        .base('appbo8nzfBdKwOEoo')('photos')
+        .select({
+          view: "Grid view",
+          filterByFormula: `{album_id} = '${option?.[1]}'`,
+        })
+        .firstPage();
+      data1 = await Airtable
+        .base('appbo8nzfBdKwOEoo')('texts')
+        .select({
+          view: "Grid view",
+          filterByFormula: `{album_id} = '${option?.[1]}'`,
+        })
+        .firstPage();
+      data = [...data.map(el => el.fields), ...data1.map(el => el.fields)];
       res.status(200).json(data);
     } catch (error) {
       console.error(error);
@@ -63,24 +86,9 @@ export default async (req, res) => {
             console.error(err);
             return;
           }
-          data = records.map(el => el.getId())
+          data = records.map(el => el.fields)
           res.status(200).json(data);
         });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ msg: "Something went wrong! 😕" });
-    }
-  } else if (option?.[0].indexOf("photos") >= 0) {
-    try {
-      data = await Airtable
-        .base('appbo8nzfBdKwOEoo')('photos')
-        .select({
-          view: "Grid view",
-          filterByFormula: `{album_id} = '${option?.[1]}'`,
-        })
-        .firstPage();
-      data = data.map(el => el.fields)
-      res.status(200).json(data);
     } catch (error) {
       console.error(error);
       res.status(500).json({ msg: "Something went wrong! 😕" });
@@ -103,8 +111,27 @@ export default async (req, res) => {
             console.error(err);
             return;
           }
-          data = records.map(el => el.getId())
+          data = records.map(el => el.fields)
           res.status(200).json(data);
+        });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ msg: "Something went wrong! 😕" });
+    }
+  } else if (
+    option?.[0].indexOf("text") >= 0 &&
+    option?.[1].indexOf("delete") >= 0
+   ) {
+    try {
+      Airtable
+        .base('appbo8nzfBdKwOEoo')('texts')
+        .destroy([option?.[2]], function(err, deletedRecords) {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          console.log('Deleted', deletedRecords.length, 'records');
+          res.status(200).json({ deleted: true });
         });
     } catch (error) {
       console.error(error);

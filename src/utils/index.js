@@ -7,6 +7,9 @@ const screenWidthCorrectedMOB = isServer() ? 0 : (window.innerWidth - 32);
 export const CANVAS_WIDTH = (isDesktopWindow() || isServer()) ? 1000 : (1000/562 * screenWidthCorrectedMOB);
 export const CANVAS_HEIGHT = (isDesktopWindow() || isServer()) ? 562 : screenWidthCorrectedMOB;
 export const NEW_SLIDE_ID = "#";
+
+
+
 export const COLLAGE_CONFIG = {
   0: {
     canvasWidth: CANVAS_WIDTH,
