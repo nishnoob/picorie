@@ -2,6 +2,7 @@ import React from 'react';
 import StructureSelect from '../StructureSelect';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../../../utils';
 import { HeaderTextEditor } from './HeaderTextEditor';
+import ImageEditor from './ImageEditor';
 
 export const ELEMENTS_ENUM = {
   HEADER_TEXT: 0,
@@ -20,21 +21,29 @@ export default class ElementEditor extends React.Component {
     this.newSlide = !this.props.type;
   }
 
-  elementData = this.props.data;
-
   renderElement = () => {
     const RENDER = {
       0: (
         <HeaderTextEditor
-          key={this.elementData.id}
-          data={this.elementData}
+          key={this.props.data.id}
+          data={this.props.data}
           albumId={this.props.albumId}
           order={this.props.order}
           setSlideData={this.props.setSlideData}
         />
       ),
+      1: (
+        <ImageEditor
+          key={this.props.data.id}
+          data={this.props.data}
+          albumId={this.props.albumId}
+          setSlideData={this.props.setSlideData}
+          isCreator={this.props.isCreator}
+          order={this.props.order}
+        />
+      ),
     };
-    return RENDER[this.elementData.type];
+    return RENDER[this.props.data.type];
   };
 
   render () {
@@ -87,9 +96,9 @@ export default class ElementEditor extends React.Component {
         </style>
         <div className="wrapper">
           {/* {elementData.type !== null && <div className="order-str"><sup>#</sup>{orderStr}</div>} */}
-          {this.elementData.type === null ? (
+          {this.props.data.type === null ? (
             <StructureSelect
-              data={this.elementData}
+              data={this.props.data}
               veryFirst={this.props.veryFirst}
               isPrevSaved={this.props.isPrevSaved}
               setSlideData={this.props.setSlideData}

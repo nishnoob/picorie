@@ -94,6 +94,25 @@ export default async (req, res) => {
       res.status(500).json({ msg: "Something went wrong! 😕" });
     }
   } else if (
+    option?.[0].indexOf("photo") >= 0 &&
+    option?.[1].indexOf("delete") >= 0
+   ) {
+    try {
+      Airtable
+        .base('appbo8nzfBdKwOEoo')('photos')
+        .destroy([option?.[2]], function(err, deletedRecords) {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          // console.log('Deleted', deletedRecords.length, 'records');
+          res.status(200).json({ deleted: true });
+        });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ msg: "Something went wrong! 😕" });
+    }
+  } else if (
     option?.[0].indexOf("text") >= 0 &&
     option?.[1].indexOf("save") >= 0
    ) {

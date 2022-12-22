@@ -1,12 +1,11 @@
 import React from 'react';
-import { CANVAS_HEIGHT, CANVAS_WIDTH, COLLAGE_CONFIG, NEW_SLIDE_ID } from '../../utils';
+import { CANVAS_HEIGHT, CANVAS_WIDTH, COLLAGE_CONFIG } from '../../utils';
 
 class StructureSelect extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
       showSelector: Boolean(this.props.data.type || this.props.veryFirst),
-      elementType: null,
       addMoreHover: false,
     };
   }
@@ -14,8 +13,25 @@ class StructureSelect extends React.Component{
   elementData = this.props.data;
 
   componentDidUpdate(prevProps) {
-    if (!this.elementData.type && this.elementData.id !== prevProps.id){
+    if (!this.elementData.type && (this.elementData.id !== prevProps.data.id)){
       this.setState({ showSelector: false });
+    }
+  }
+
+  configSelectHandler = (id) => {
+    console.log(id)
+    this.props.setSlideData(
+    state => state.map(
+      i => i.id == this.elementData.id ?
+        { id: this.elementData.id, type: parseInt(id,10) }
+        : i
+    )
+  )};
+
+  addMoreHandler = () => {
+    if (this.props.isPrevSaved) {
+      this.setState({ showSelector: true });
+      this.props.setSlideData(state => ([...state, { id: state.length, type: null} ]));
     }
   }
 
@@ -24,13 +40,13 @@ class StructureSelect extends React.Component{
       <div>{'Heading <h1/>'}</div>
     ),
     1: () => (
-      <div className="collage1"></div>
+      <div className="collage1" />
     ),
     2: () => (
       <div className="collage2">
-        <div className='' />
-        <div className='' />
-        <div className='' />
+        <div/>
+        <div/>
+        <div/>
       </div>
     )
   };
@@ -109,17 +125,7 @@ class StructureSelect extends React.Component{
           {this.state.showSelector ? (
             <div className='options-container'>
               {Object.keys(COLLAGE_CONFIG).map(id => (
-                <div
-                  key={id}
-                  id={id}
-                  onClick={() => this.props.setSlideData(
-                    state => state.map(
-                      i => i.id == this.elementData.id ?
-                        { id: this.elementData.id, type: parseInt(id,10) }
-                        : i
-                    )
-                  )}
-                >
+                <div key={id} onClick={() => this.configSelectHandler(id)}>
                   {this.icon_map[id]()}
                 </div>
               ))}
@@ -127,12 +133,7 @@ class StructureSelect extends React.Component{
           ) : (
             <div
               className={`add-more ${!this.props.isPrevSaved && "pointer-disabled"}`}
-              onClick={() => {
-                if (this.props.isPrevSaved) {
-                  this.setState({ showSelector: true });
-                  this.props.setSlideData(state => ([...state, { id: state.length, type: null} ]));
-                }
-              }}
+              onClick={this.addMoreHandler}
               onMouseEnter={() => this.setState({ addMoreHover: true })}
               onMouseLeave={() => this.setState({ addMoreHover: false })}
             >

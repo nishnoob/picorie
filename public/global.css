@@ -105,7 +105,7 @@ html {
 
 .minimal-btn {
   background-color: transparent;
-  border: 1px solid grey;
+  border: 1px solid black;
   cursor: pointer;
   transition: border 0.1s ease;
   padding: 5px 8px 5px;

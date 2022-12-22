@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
-import ImageSlide from './ImageSlide';
 import fetcher from '../../utils/fetcher';
 import Navbar from '../../components/Navbar';
 import Loader from '../../components/Loader';
@@ -20,6 +18,7 @@ const Album = ({ albumId }) => {
 
   const getAlbumData = async () => {
     let data = await fetcher(`/self/album/${albumId}`);
+    data = data.sort((a,b) => a.order - b.order);
     setSlideData(isCreator ? data.length > 0 ?
       [
         ...data,
@@ -38,16 +37,6 @@ const Album = ({ albumId }) => {
       }
     ] : data);
   };
-  
-  const saveToStorage = async (sVal) => {
-    let res = await fetcher('/self/photo/save', { method: 'POST', body: sVal });
-    if (res?.[0]?.id) {
-      setSlideData(
-        state => state.map(el => el.id === this.props.id ? res?.[0] : el ),
-      )
-      toast.success("picture saved!");
-    }
-  }
 
   return (
     <>
@@ -72,8 +61,7 @@ const Album = ({ albumId }) => {
           }
           @media (min-width: 992px) {
             .work-space {
-              max-width: 1000px;
-              margin: 0 auto;
+              margin: 0 32px;
               padding-bottom: 0 0 128px;
             }
           }
@@ -89,9 +77,8 @@ const Album = ({ albumId }) => {
               data={el}
               key={el.id}
               setSlideData={setSlideData}
-              fetchCall={saveToStorage}
               order={index}
-              veryFirst={index === 0}
+              veryFirst={index === (slideData.length - 2)}
               isPrevSaved={Boolean(slideData[index-1]?.url || slideData[index-1]?.content)}
               isCreator={isCreator}
             />

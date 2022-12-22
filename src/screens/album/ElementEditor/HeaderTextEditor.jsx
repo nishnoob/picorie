@@ -18,7 +18,7 @@ export const HeaderTextEditor = ({
       content: value,
       album_id: [albumId],
       order,
-      type: ELEMENTS_ENUM,
+      type: data.type,
     } });
     if (res?.[0]?.id) {
       setSlideData(
@@ -50,6 +50,7 @@ export const HeaderTextEditor = ({
         {`
           .wrapper {
             pointer-events: ${isSaved ? 'none' : 'auto'};
+            transition: all 0.2s ease-in-out;
           }
           .wrapper:hover {
             background-color: ${isSaved ? 'lightgrey' : 'none'};
@@ -58,7 +59,7 @@ export const HeaderTextEditor = ({
             pointer-events: auto;
           }
           .controls {
-            padding: 8px;
+            padding: 16px 0;
             display: flex;
             justify-content: space-between;
           }
