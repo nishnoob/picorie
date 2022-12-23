@@ -39,7 +39,7 @@ class StructureSelect extends React.Component{
     0: () => (
       <div>{'Heading <h1/>'}</div>
     ),
-    4: () => (
+    3: () => (
       <div>{'Summary <p/>'}</div>
     ),
     1: () => (

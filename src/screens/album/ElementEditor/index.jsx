@@ -43,7 +43,7 @@ export default class ElementEditor extends React.Component {
           order={this.props.order}
         />
       ),
-      4: <SimpleTextEditor
+      3: <SimpleTextEditor
           key={this.props.data.id}
           data={this.props.data}
           albumId={this.props.albumId}

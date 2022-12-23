@@ -6,6 +6,7 @@ import { useUser } from '@auth0/nextjs-auth0';
 import ElementEditor from './ElementEditor';
 
 const Album = ({ albumId }) => {
+  // TODO: protect with email
   const [slideData, setSlideData] = useState([]);
   const { user, isLoading } = useUser();
   const isCreator = Boolean(user?.email);
@@ -59,6 +60,11 @@ const Album = ({ albumId }) => {
             text-decoration: none;
             color: black;
           }
+          .note {
+            background: lightgrey;
+            border: 1px solid grey;
+            padding: 20px 40px;
+          }
           @media (min-width: 992px) {
             .work-space {
               margin: 0 32px;
@@ -70,6 +76,10 @@ const Album = ({ albumId }) => {
       <div className="parent">
         <Navbar />
         <div className='work-space'>
+          {isCreator && <div className='note'>
+            <h1>editor mode</h1>
+            <p>Viewers see what you see. The editor is made to resemble what the visitors see.</p>
+          </div>}
           {/* <div className='album-title' contentEditable={true}>Sunday Mass</div> */}
           {slideData.length ? slideData.map((el, index) => (
             <ElementEditor
