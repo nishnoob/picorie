@@ -39,6 +39,9 @@ class StructureSelect extends React.Component{
     0: () => (
       <div>{'Heading <h1/>'}</div>
     ),
+    4: () => (
+      <div>{'Summary <p/>'}</div>
+    ),
     1: () => (
       <div className="collage1" />
     ),
@@ -124,7 +127,7 @@ class StructureSelect extends React.Component{
         <article className={this.state.showSelector && 'selector-mode'}>
           {this.state.showSelector ? (
             <div className='options-container'>
-              {Object.keys(COLLAGE_CONFIG).map(id => (
+              {Object.keys(this.icon_map).map(id => (
                 <div key={id} onClick={() => this.configSelectHandler(id)}>
                   {this.icon_map[id]()}
                 </div>

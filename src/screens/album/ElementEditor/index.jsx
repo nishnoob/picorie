@@ -3,6 +3,7 @@ import StructureSelect from '../StructureSelect';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../../../utils';
 import { HeaderTextEditor } from './HeaderTextEditor';
 import ImageEditor from './ImageEditor';
+import { SimpleTextEditor } from './SimpleTextEditor';
 
 export const ELEMENTS_ENUM = {
   HEADER_TEXT: 0,
@@ -42,6 +43,13 @@ export default class ElementEditor extends React.Component {
           order={this.props.order}
         />
       ),
+      4: <SimpleTextEditor
+          key={this.props.data.id}
+          data={this.props.data}
+          albumId={this.props.albumId}
+          order={this.props.order}
+          setSlideData={this.props.setSlideData}
+        />
     };
     return RENDER[this.props.data.type];
   };

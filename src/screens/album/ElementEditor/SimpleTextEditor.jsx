@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 import { ELEMENTS_ENUM } from ".";
 import fetcher from "../../../utils/fetcher";
 
-export const HeaderTextEditor = ({
+export const SimpleTextEditor = ({
   albumId,
   data,
   order,
@@ -67,15 +67,13 @@ export const HeaderTextEditor = ({
             background-color: lightgrey;
             padding: 16px;
           }
-          .header-text-container h1 {
-            font-size: 38px;
-          }
-          .header-text-container :global(div) {
+          .header-text-container :global(div),
+          .header-text-container :global(p) {
             outline: none;
             width: 100%;
             min-height: 100px;
-            font-size: 38px;
-            text-align: center;
+            font-size: 24px;
+            padding: 0 10vw;
           }
           @media (min-width: 992px) {
           }
@@ -89,9 +87,10 @@ export const HeaderTextEditor = ({
         </div>
         <article className={`header-text-container ${isSaved && 'saved'}`}>
           {isSaved ? (
-            <h1 className="text-center" dangerouslySetInnerHTML={{__html: data.content}}></h1>
+            <p dangerouslySetInnerHTML={{__html: data.content}}></p>
           ) : (
             <ContentEditable
+            
               html={value}
               onChange={handleChange}
             />

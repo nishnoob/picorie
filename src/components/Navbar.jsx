@@ -1,10 +1,10 @@
 import { useUser } from '@auth0/nextjs-auth0';
+import { useRouter } from 'next/router';
 import React from 'react';
 
 const Navbar = () => {
   const { user } = useUser();
-  // const [share, setShare] = useState(false);
-  // const [slideData, setSlideData] = useState([]);
+  const router = useRouter();
 
   return (
     <>
@@ -32,9 +32,10 @@ const Navbar = () => {
       <>
         <header className='align-center relative'>
           <div className='title'>picorie</div>
-          <div className='text-14 text-white'>{user?.email}</div>
-          {/* {user?.email && <button className="minimal-btn" onClick={() => undefined}>preview</button>} */}
-          {/* <div className="minimal-btn" onClick={() => setShare(true)}>preview</div> */}
+          <div className='text-14 text-white'>{
+            user?.email || (
+            <button className='minimal-btn' onClick={() => router.push('/')}>Login</button>
+          )}</div>
         </header>
         {/* {share && (
           <ShareWindow slideData={slideData} onClose={() => setShare(false)} />
