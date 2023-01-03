@@ -102,6 +102,7 @@ const Library = ({  }) => {
           }
           .album-title-col {
             margin-top: 64px;
+            text-align: right;
           }
           .album-title-col :global(a) {
             text-decoration: none;

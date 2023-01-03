@@ -9,6 +9,7 @@ export const HeaderTextEditor = ({
   data,
   order,
   setSlideData = () => undefined,
+  isCreator,
 }) => {
   const [value, setValue] = useState('');
   const isSaved = data?.content;
@@ -51,6 +52,8 @@ export const HeaderTextEditor = ({
           .wrapper {
             pointer-events: ${isSaved ? 'none' : 'auto'};
             transition: all 0.2s ease-in-out;
+            padding: 20vh 0;
+            height: fit-content;
           }
           .wrapper:hover {
             background-color: ${isSaved ? 'lightgrey' : 'none'};
@@ -68,25 +71,28 @@ export const HeaderTextEditor = ({
             padding: 16px;
           }
           .header-text-container h1 {
-            font-size: 38px;
+            font-size: 48px;
           }
           .header-text-container :global(div) {
             outline: none;
             width: 100%;
             min-height: 100px;
-            font-size: 38px;
+            font-size: 48px;
             text-align: center;
+            margin-right: -16px;
           }
           @media (min-width: 992px) {
           }
         `}
       </style>
       <div className="wrapper">
-        <div className={`controls ${isSaved && 'opacity-0'}`}>
-          <button onClick={() => setSlideData(state => state.map(el => el.id === data.id ? { id: el.id, type: null } : el ))}>
-            &#x21BA; reset
-          </button>
-        </div>
+        {isCreator && (
+          <div className={`controls ${isSaved && 'opacity-0'}`}>
+            <button onClick={() => setSlideData(state => state.map(el => el.id === data.id ? { id: el.id, type: null } : el ))}>
+              &#x21BA; reset
+            </button>
+          </div>
+        )}
         <article className={`header-text-container ${isSaved && 'saved'}`}>
           {isSaved ? (
             <h1 className="text-center" dangerouslySetInnerHTML={{__html: data.content}}></h1>
@@ -97,25 +103,27 @@ export const HeaderTextEditor = ({
             />
           )}
         </article>
-        <div className='controls'>
-          <div></div>
-          {isSaved ? (
-            <button
-              className='minimal-btn danger'
-              onClick={handleDelete}
-            >
-              delete
-            </button>
-            ) : (
-            <button
-              className='save-btn'
-              onClick={handleSave}
-              disabled={isSaved}
-            >
-              save
-            </button>
-          )}
-        </div>
+        {isCreator && (
+          <div className='controls'>
+            <div></div>
+            {isSaved ? (
+              <button
+                className='minimal-btn danger'
+                onClick={handleDelete}
+              >
+                delete
+              </button>
+              ) : (
+              <button
+                className='save-btn'
+                onClick={handleSave}
+                disabled={isSaved}
+              >
+                save
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </>
   );

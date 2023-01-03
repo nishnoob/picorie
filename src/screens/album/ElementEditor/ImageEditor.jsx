@@ -10,6 +10,8 @@ export default function ImageEditor({
   isCreator,
   setSlideData,
   order,
+  aspectRatio = 9/16,
+  saveOverride,
 }) {
   const isSaved =  Boolean(data?.url);
   const stageRef = useRef();
@@ -28,7 +30,7 @@ export default function ImageEditor({
     const parentElement = document.getElementById(`slide-container-${data.id}`);
     if (parentElement && !isSaved) {
       const canvasWidth = parentElement.offsetWidth;
-      const canvasHeight = parentElement.offsetWidth * (9/16);
+      const canvasHeight = parentElement.offsetWidth * (aspectRatio);
 
       stageRef.current = new Konva.Stage({
         container: `slide-container-${data.id}`,
@@ -135,19 +137,28 @@ export default function ImageEditor({
     ));
 
   const saveToBE = async (epoch) => {
-    const dataObj = {
-      type: data.type,
-      url: `https://s3.ap-south-1.amazonaws.com/album-hosting.amirickbolchi.com/${epoch}`,
-      album_id: [albumId],
-      order,
-    };
-    let res = await fetcher('/self/photo/save', { method: 'POST', body: dataObj });
-    if (res?.[0]?.id) {
+    if (saveOverride) {
+      const url = `https://s3.ap-south-1.amazonaws.com/album-hosting.amirickbolchi.com/${epoch}`;
+      saveOverride(url);
       stageRef.current.destroy();
       setSlideData(
-        state => state.map(el => el.id === data.id ? res?.[0] : el ),
+        state => state.map(el => el.id === data.id ? {...el, url } : el ),
       )
-      toast.success("picture saved!");
+    } else {
+      const dataObj = {
+        type: data.type,
+        url: `https://s3.ap-south-1.amazonaws.com/album-hosting.amirickbolchi.com/${epoch}`,
+        album_id: [albumId],
+        order,
+      };
+      let res = await fetcher('/self/photo/save', { method: 'POST', body: dataObj });
+      if (res?.[0]?.id) {
+        stageRef.current.destroy();
+        setSlideData(
+          state => state.map(el => el.id === data.id ? res?.[0] : el ),
+        )
+        toast.success("picture saved!");
+      }
     }
   }
 
@@ -183,6 +194,8 @@ export default function ImageEditor({
           .wrapper {
             pointer-events: ${isSaved ? 'none' : 'auto'};
             transition: all 0.2s ease-in-out;
+            padding: 48px 0;
+            height: fit-content;
           }
           .wrapper:hover {
             background-color: ${isSaved ? 'lightgrey' : 'none'};
@@ -209,18 +222,20 @@ export default function ImageEditor({
         `}
       </style>
       <div className='wrapper'>
-        <div className={`controls ${isSaved && 'opacity-0'}`}>
-          <button className='minimal-btn' onClick={resetHandler}>
-            &#x21BA; reset
-          </button>
-        </div>
+        {isCreator && (
+          <div className={`controls ${isSaved && 'opacity-0'}`}>
+            <button className='minimal-btn' onClick={resetHandler}>
+              &#x21BA; reset
+            </button>
+          </div>
+        )}
         <article id={`slide-container-${data?.id}`} className={`slide-container ${isSaved && 'saved'}`}>
           {isSaved && (
             <img src={data?.url} width={"100%"} height={"100%"} />
           )}
         </article>
         {isCreator && (
-          <div className='controls'>
+          <div className={`controls ${isSaved && saveOverride && 'opacity-0'}`}>
             {isSaved ? (
               <button
                 className='minimal-btn danger'

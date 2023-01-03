@@ -4,6 +4,8 @@ import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../../../utils';
 import { HeaderTextEditor } from './HeaderTextEditor';
 import ImageEditor from './ImageEditor';
 import { SimpleTextEditor } from './SimpleTextEditor';
+import ImageEditor2 from './ImageEditor2';
+import ImageTextEditor from './ImageTextEditor';
 
 export const ELEMENTS_ENUM = {
   HEADER_TEXT: 0,
@@ -31,6 +33,7 @@ export default class ElementEditor extends React.Component {
           albumId={this.props.albumId}
           order={this.props.order}
           setSlideData={this.props.setSlideData}
+          isCreator={this.props.isCreator}
         />
       ),
       1: (
@@ -43,13 +46,36 @@ export default class ElementEditor extends React.Component {
           order={this.props.order}
         />
       ),
-      3: <SimpleTextEditor
+      2: (
+        <ImageEditor2
+          key={this.props.data.id}
+          data={this.props.data}
+          albumId={this.props.albumId}
+          setSlideData={this.props.setSlideData}
+          isCreator={this.props.isCreator}
+          order={this.props.order}
+        />
+      ),
+      3: (
+        <SimpleTextEditor
           key={this.props.data.id}
           data={this.props.data}
           albumId={this.props.albumId}
           order={this.props.order}
           setSlideData={this.props.setSlideData}
+          isCreator={this.props.isCreator}
         />
+      ),
+      4: (
+        <ImageTextEditor
+          key={this.props.data.id}
+          data={this.props.data}
+          albumId={this.props.albumId}
+          order={this.props.order}
+          setSlideData={this.props.setSlideData}
+          isCreator={this.props.isCreator}
+        />
+      ),
     };
     return RENDER[this.props.data.type];
   };

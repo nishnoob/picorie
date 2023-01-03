@@ -51,6 +51,12 @@ class StructureSelect extends React.Component{
         <div/>
         <div/>
       </div>
+    ),
+    4: () => (
+      <div className="d-flex collage3-wrapper align-center">
+        <div className='text-center'>Summary <br/> {' <p/>'}</div>
+        <div className="collage3" />
+      </div>
     )
   };
 
@@ -107,6 +113,18 @@ class StructureSelect extends React.Component{
             height: 50px;
             display: flex;
           }
+          :global(.collage3-wrapper .text-center) {
+            font-size: 12px;
+          }
+          :global(.collage3-wrapper) {
+            gap:8px;
+          }
+          :global(.collage3) {
+            width: 70px;
+            height: 50px;
+            display: flex;
+            border: 1px solid black;
+          }
           :global(.collage2 div) {
             flex: 1;
             border: 1px solid black;
@@ -127,7 +145,7 @@ class StructureSelect extends React.Component{
         <article className={this.state.showSelector && 'selector-mode'}>
           {this.state.showSelector ? (
             <div className='options-container'>
-              {Object.keys(this.icon_map).map(id => (
+              {Object.keys(this.icon_map).sort((a,b) => a-b).map(id => (
                 <div key={id} onClick={() => this.configSelectHandler(id)}>
                   {this.icon_map[id]()}
                 </div>

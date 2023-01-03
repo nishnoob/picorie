@@ -97,6 +97,7 @@ export default async (req, res) => {
     option?.[0].indexOf("photo") >= 0 &&
     option?.[1].indexOf("delete") >= 0
    ) {
+    // TODO: Delete photo from S3
     try {
       Airtable
         .base('appbo8nzfBdKwOEoo')('photos')

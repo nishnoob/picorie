@@ -12,11 +12,6 @@ const HomeScreen = () => {
             width: 100vw;
             height: 100vh;
           }
-          .auth-btn {
-            text-decoration: none;
-            color: black;
-            width: fit-content;
-          }
           .title {
             letter-spacing: 8px;
             font-size: 48px;
@@ -28,7 +23,7 @@ const HomeScreen = () => {
       <div className='wrapper d-flex-col align-center justify-center'>
         <div className='title'>picorie</div>
         <div
-          className='minimal-btn auth-btn'
+          className='minimal-btn'
           onClick={() => router.push('/api/auth/login')}
           // href="/api/auth/login"
         >

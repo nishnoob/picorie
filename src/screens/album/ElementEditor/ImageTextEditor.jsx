@@ -3,8 +3,9 @@ import ContentEditable from "react-contenteditable";
 import { toast } from "react-hot-toast";
 import { ELEMENTS_ENUM } from ".";
 import fetcher from "../../../utils/fetcher";
+import ImageEditor from "./ImageEditor";
 
-export const SimpleTextEditor = ({
+const ImageTextEditor = ({
   albumId,
   data,
   order,
@@ -12,11 +13,13 @@ export const SimpleTextEditor = ({
   isCreator,
 }) => {
   const [value, setValue] = useState('');
-  const isSaved = data?.content;
+  const [img, setImg] = useState('');
+  const isSaved = data?.content && data?.url;
 
   const handleSave = async () => {
-    let res = await fetcher('/self/text/save', { method: 'POST', body: {
+    let res = await fetcher('/self/photo/save', { method: 'POST', body: {
       content: value,
+      url: img,
       album_id: [albumId],
       order,
       type: data.type,
@@ -45,6 +48,8 @@ export const SimpleTextEditor = ({
     setValue(evt.target.value);
   };
 
+  const saveOverride = (url) => setImg(url);
+
   return (
     <>
       <style jsx>
@@ -53,7 +58,6 @@ export const SimpleTextEditor = ({
             pointer-events: ${isSaved ? 'none' : 'auto'};
             transition: all 0.2s ease-in-out;
             padding: 48px 0;
-            height: fit-content;
           }
           .wrapper:hover {
             background-color: ${isSaved ? 'lightgrey' : 'none'};
@@ -66,6 +70,11 @@ export const SimpleTextEditor = ({
             display: flex;
             justify-content: space-between;
           }
+          .header-text-container {
+            width: 25%;
+            margin-right: 24px;
+            height: fit-content;
+          }
           .header-text-container:not(.saved) {
             background-color: lightgrey;
             padding: 16px;
@@ -74,9 +83,11 @@ export const SimpleTextEditor = ({
           .header-text-container :global(p) {
             outline: none;
             width: 100%;
-            min-height: 100px;
+            min-height: 60vh;
             font-size: 24px;
-            padding: 0 10vw;
+          }
+          .wrapper :global(.wrapper) {
+            flex: 1;
           }
           @media (min-width: 992px) {
           }
@@ -90,17 +101,32 @@ export const SimpleTextEditor = ({
             </button>
           </div>
         )}
-        <article className={`header-text-container ${isSaved && 'saved'}`}>
-          {isSaved ? (
-            <p dangerouslySetInnerHTML={{__html: data.content}}></p>
-          ) : (
-            <ContentEditable
-            
-              html={value}
-              onChange={handleChange}
-            />
-          )}
-        </article>
+        <div className="d-flex align-center">
+          <article className={`header-text-container ${isSaved && 'saved'}`}>
+            {isSaved ? (
+              <p dangerouslySetInnerHTML={{__html: data.content}}></p>
+            ) : (
+              <ContentEditable
+                html={value}
+                onChange={handleChange}
+              />
+            )}
+          </article>
+          <ImageEditor
+            key={`${data?.id}a`}
+            data={{
+              ...data,
+              id: `${data?.id}a`,
+              url: data.url || img
+            }}
+            albumId={albumId}
+            setSlideData={setSlideData}
+            isCreator={isCreator}
+            order={order}
+            aspectRatio={3/4}
+            saveOverride={saveOverride}
+          />
+        </div>
         {isCreator && (
           <div className='controls'>
             <div></div>
@@ -126,3 +152,5 @@ export const SimpleTextEditor = ({
     </>
   );
 };
+
+export default ImageTextEditor;

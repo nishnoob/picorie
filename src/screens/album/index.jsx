@@ -4,6 +4,7 @@ import Navbar from '../../components/Navbar';
 import Loader from '../../components/Loader';
 import { useUser } from '@auth0/nextjs-auth0';
 import ElementEditor from './ElementEditor';
+import CopyToClipboard from '../../components/CopyToClipboard';
 
 const Album = ({ albumId }) => {
   // TODO: protect with email
@@ -44,7 +45,7 @@ const Album = ({ albumId }) => {
       <style jsx>
         {`
           .work-space {
-            padding: 48px 16px 128px;
+            padding: 0px 16px 128px;
           }
           :global(body::-webkit-scrollbar) {
             display: none;
@@ -64,6 +65,16 @@ const Album = ({ albumId }) => {
             background: lightgrey;
             border: 1px solid grey;
             padding: 20px 40px;
+            left: 0;
+            right: 0;
+            top: 32px;
+            z-index: 2;
+          }
+          .note .close-btn {
+            padding-top: 24px;
+          }
+          .note h1 {
+            margin: 0;
           }
           @media (min-width: 992px) {
             .work-space {
@@ -75,11 +86,21 @@ const Album = ({ albumId }) => {
       </style>
       <div className="parent">
         <Navbar />
-        <div className='work-space'>
-          {isCreator && <div className='note'>
-            <h1>editor mode</h1>
-            <p>Viewers see what you see. The editor is made to resemble what the visitors see.</p>
-          </div>}
+        <div className='work-space relative'>
+          {isCreator && (
+            <div className='note absolute'>
+              {/* {!shirnk && ( */}
+                <>
+                  <div className='d-flex space-between w-100'>
+                    <h1>editor mode</h1>
+                    {/* <div className='close-btn pointer text-18' onClick={() => setShrink(state => !state)}>&#x2715;</div> */}
+                  </div>
+                  <p>Viewers see what you see. The editor is made to resemble what the visitors see as an end result.</p>
+                </>
+              {/* )} */}
+              <CopyToClipboard />
+            </div>
+          )}
           {/* <div className='album-title' contentEditable={true}>Sunday Mass</div> */}
           {slideData.length ? slideData.map((el, index) => (
             <ElementEditor
