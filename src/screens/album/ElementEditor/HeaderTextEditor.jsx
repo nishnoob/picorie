@@ -1,7 +1,6 @@
 import { useState } from "react";
 import ContentEditable from "react-contenteditable";
 import { toast } from "react-hot-toast";
-import { ELEMENTS_ENUM } from ".";
 import fetcher from "../../../utils/fetcher";
 
 export const HeaderTextEditor = ({
@@ -52,7 +51,6 @@ export const HeaderTextEditor = ({
           .wrapper {
             pointer-events: ${isSaved ? 'none' : 'auto'};
             transition: all 0.2s ease-in-out;
-            padding: 20vh 0;
             height: fit-content;
           }
           .wrapper:hover {
@@ -62,9 +60,17 @@ export const HeaderTextEditor = ({
             pointer-events: auto;
           }
           .controls {
-            padding: 16px 0;
+            padding: 16px;
             display: flex;
             justify-content: space-between;
+            left: 0;
+            right: 0;
+          }
+          .controls.last {
+            bottom: 0;
+          }
+          .header-text-container {
+            padding: 20vh 0;
           }
           .header-text-container:not(.saved) {
             background-color: lightgrey;
@@ -85,9 +91,9 @@ export const HeaderTextEditor = ({
           }
         `}
       </style>
-      <div className="wrapper">
+      <div className="wrapper relative">
         {isCreator && (
-          <div className={`controls ${isSaved && 'opacity-0'}`}>
+          <div className={`controls ${isSaved && 'opacity-0'} absolute`}>
             <button onClick={() => setSlideData(state => state.map(el => el.id === data.id ? { id: el.id, type: null } : el ))}>
               &#x21BA; reset
             </button>
@@ -104,7 +110,7 @@ export const HeaderTextEditor = ({
           )}
         </article>
         {isCreator && (
-          <div className='controls'>
+          <div className='controls last absolute'>
             <div></div>
             {isSaved ? (
               <button

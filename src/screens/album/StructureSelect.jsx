@@ -36,28 +36,43 @@ class StructureSelect extends React.Component{
   }
 
   icon_map = {
-    0: () => (
-      <div>{'Heading <h1/>'}</div>
-    ),
-    3: () => (
-      <div>{'Summary <p/>'}</div>
-    ),
-    1: () => (
-      <div className="collage1" />
-    ),
-    2: () => (
-      <div className="collage2">
-        <div/>
-        <div/>
-        <div/>
-      </div>
-    ),
-    4: () => (
-      <div className="d-flex collage3-wrapper align-center">
-        <div className='text-center'>Summary <br/> {' <p/>'}</div>
-        <div className="collage3" />
-      </div>
-    )
+    0: {
+      render: (i) => (
+        <div>{'Heading <h1/>'}</div>
+      ),
+      disable: (i) => i !== 0,
+    },
+    3: {
+      render: () => (
+        <div>{'Summary <p/>'}</div>
+      ),
+      disable: (i) => undefined,
+    },
+    1: {
+      render: () => (
+        <div className="collage1" />
+      ),
+      disable: (i) => undefined,
+    },
+    2: {
+      render: () => (
+        <div className="collage2">
+          <div/>
+          <div/>
+          <div/>
+        </div>
+      ),
+      disable: (i) => undefined,
+    },
+    4: {
+      render: () => (
+        <div className="d-flex collage3-wrapper align-center">
+          <div className='text-center'>Summary <br/> {' <p/>'}</div>
+          <div className="collage3" />
+        </div>
+      ),
+      disable: (i) => undefined,
+    },
   };
 
   render (){
@@ -133,6 +148,10 @@ class StructureSelect extends React.Component{
             cursor: not-allowed;
             pointer-events: all !important;
           }
+          :global(.diabled-header) {
+            cursor: not-allowed;
+            pointer-events: all !important;
+          }
           @media (min-width: 992px) {
             article {
               width: ${CANVAS_WIDTH};
@@ -145,9 +164,9 @@ class StructureSelect extends React.Component{
         <article className={this.state.showSelector && 'selector-mode'}>
           {this.state.showSelector ? (
             <div className='options-container'>
-              {Object.keys(this.icon_map).sort((a,b) => a-b).map(id => (
+              {Object.keys(this.icon_map).sort((a,b) => a-b).map((id) => !this.icon_map[id]?.disable(this.props.order) && (
                 <div key={id} onClick={() => this.configSelectHandler(id)}>
-                  {this.icon_map[id]()}
+                  {this.icon_map[id].render(id)}
                 </div>
               ))}
             </div>

@@ -55,6 +55,7 @@ export default function ImageEditor({
       });
 
       bgRectangle.on('click', () => {
+        // console.log('click img', uploadRef.current)
         uploadRef.current.click();
       })
       addCursorStyle(bgRectangle, 'pointer');
@@ -137,29 +138,29 @@ export default function ImageEditor({
     ));
 
   const saveToBE = async (epoch) => {
-    if (saveOverride) {
-      const url = `https://s3.ap-south-1.amazonaws.com/album-hosting.amirickbolchi.com/${epoch}`;
-      saveOverride(url);
+    // if (saveOverride) {
+    //   const url = `https://s3.ap-south-1.amazonaws.com/album-hosting.amirickbolchi.com/${epoch}`;
+    //   saveOverride(url);
+    //   stageRef.current.destroy();
+    //   setSlideData(
+    //     state => state.map(el => el.id === data.id ? {...el, url } : el ),
+    //   )
+    // } else {
+    const dataObj = {
+      type: data.type,
+      url: `https://s3.ap-south-1.amazonaws.com/album-hosting.amirickbolchi.com/${epoch}`,
+      album_id: [albumId],
+      order,
+    };
+    let res = await fetcher('/self/photo/save', { method: 'POST', body: dataObj });
+    if (res?.[0]?.id) {
       stageRef.current.destroy();
       setSlideData(
-        state => state.map(el => el.id === data.id ? {...el, url } : el ),
+        state => state.map(el => el.id === data.id ? res?.[0] : el ),
       )
-    } else {
-      const dataObj = {
-        type: data.type,
-        url: `https://s3.ap-south-1.amazonaws.com/album-hosting.amirickbolchi.com/${epoch}`,
-        album_id: [albumId],
-        order,
-      };
-      let res = await fetcher('/self/photo/save', { method: 'POST', body: dataObj });
-      if (res?.[0]?.id) {
-        stageRef.current.destroy();
-        setSlideData(
-          state => state.map(el => el.id === data.id ? res?.[0] : el ),
-        )
-        toast.success("picture saved!");
-      }
+      toast.success("picture saved!");
     }
+    // }
   }
 
   const handleSave = async () => {
@@ -168,11 +169,16 @@ export default function ImageEditor({
     // const dataURL = stageRef.current.toDataURL({ pixelRatio: 2 });
     const dataURL = stageRef.current.toDataURL();
     const epoch = `_uploads_/${Date.now()}.jpeg`;
-    UploadImageToS3(
-      dataURL,
-      epoch,
-      () => saveToBE(epoch),
-    );
+    if (saveOverride) {
+      saveOverride(dataURL, epoch);
+      stageRef.current.destroy();
+    } else {
+      UploadImageToS3(
+        dataURL,
+        epoch,
+        () => saveToBE(epoch),
+      );
+    }
   };
 
   const handleDelete = async () => {
@@ -194,7 +200,7 @@ export default function ImageEditor({
           .wrapper {
             pointer-events: ${isSaved ? 'none' : 'auto'};
             transition: all 0.2s ease-in-out;
-            padding: 48px 0;
+            margin: 60px 0;
             height: fit-content;
           }
           .wrapper:hover {
@@ -210,9 +216,17 @@ export default function ImageEditor({
             pointer-events: auto;
           }
           .controls {
-            padding: 16px 0;
+            padding: 16px;
             display: flex;
             justify-content: end;
+            left: 0;
+            right: 0;
+            z-index: 2;
+            top: -60.5px;
+          }
+          .controls.last {
+            top: auto;
+            bottom: -60.5px;
           }
           .slide-container {
             box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.15);
@@ -223,7 +237,7 @@ export default function ImageEditor({
       </style>
       <div className='wrapper'>
         {isCreator && (
-          <div className={`controls ${isSaved && 'opacity-0'}`}>
+          <div className={`controls ${isSaved && 'opacity-0'} absolute`}>
             <button className='minimal-btn' onClick={resetHandler}>
               &#x21BA; reset
             </button>
@@ -235,7 +249,7 @@ export default function ImageEditor({
           )}
         </article>
         {isCreator && (
-          <div className={`controls ${isSaved && saveOverride && 'opacity-0'}`}>
+          <div className={`controls last ${(isSaved || saveOverride) && 'opacity-0'} absolute`}>
             {isSaved ? (
               <button
                 className='minimal-btn danger'
@@ -256,6 +270,7 @@ export default function ImageEditor({
         )}
         <input
           className='opacity-0'
+          // hidden
           type="file"
           ref={uploadRef}
           onChange={(e) => addImage(e.target.files[0])}

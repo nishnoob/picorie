@@ -45,7 +45,7 @@ const Album = ({ albumId }) => {
       <style jsx>
         {`
           .work-space {
-            padding: 0px 16px 128px;
+            padding: 0 16px 128px;
           }
           :global(body::-webkit-scrollbar) {
             display: none;
@@ -64,21 +64,17 @@ const Album = ({ albumId }) => {
           .note {
             background: lightgrey;
             border: 1px solid grey;
-            padding: 20px 40px;
+            padding: 0px 60px 20px 20px;
             left: 0;
-            right: 0;
-            top: 32px;
+            top: -16px;
             z-index: 2;
           }
-          .note .close-btn {
-            padding-top: 24px;
-          }
-          .note h1 {
-            margin: 0;
+          .note h3 {
+            margin-bottom: 8px;
           }
           @media (min-width: 992px) {
             .work-space {
-              margin: 0 32px;
+              margin: 48px 32px 0;
               padding-bottom: 0 0 128px;
             }
           }
@@ -89,15 +85,8 @@ const Album = ({ albumId }) => {
         <div className='work-space relative'>
           {isCreator && (
             <div className='note absolute'>
-              {/* {!shirnk && ( */}
-                <>
-                  <div className='d-flex space-between w-100'>
-                    <h1>editor mode</h1>
-                    {/* <div className='close-btn pointer text-18' onClick={() => setShrink(state => !state)}>&#x2715;</div> */}
-                  </div>
-                  <p>Viewers see what you see. The editor is made to resemble what the visitors see as an end result.</p>
-                </>
-              {/* )} */}
+              <h3>Story lives a lifetime only if you share!</h3>
+              <div className='text-14 mb-16'> Use the bottom link to Get people talking about your story </div>
               <CopyToClipboard />
             </div>
           )}
@@ -109,7 +98,7 @@ const Album = ({ albumId }) => {
               key={el.id}
               setSlideData={setSlideData}
               order={index}
-              veryFirst={index === (slideData.length - 2)}
+              veryFirst={index === (slideData.length - 3)}
               isPrevSaved={Boolean(slideData[index-1]?.url || slideData[index-1]?.content)}
               isCreator={isCreator}
             />

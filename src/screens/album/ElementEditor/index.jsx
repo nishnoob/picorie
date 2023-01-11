@@ -133,6 +133,7 @@ export default class ElementEditor extends React.Component {
           {this.props.data.type === null ? (
             <StructureSelect
               data={this.props.data}
+              order={this.props.order}
               veryFirst={this.props.veryFirst}
               isPrevSaved={this.props.isPrevSaved}
               setSlideData={this.props.setSlideData}

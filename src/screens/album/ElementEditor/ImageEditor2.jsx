@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { toast } from 'react-hot-toast';
+import { epochToS3URL } from '../../../utils';
 import fetcher from '../../../utils/fetcher';
 import ImageEditor from './ImageEditor';
+import UploadImageToS3 from '../imgeUpload';
 
 export default function ImageEditor2({
   albumId,
@@ -12,13 +14,36 @@ export default function ImageEditor2({
 }) {
   const [elements, setElements] = useState(data?.url ? data.url.split(',') : []);
 
-  const saveOverride = (url) => setElements(state => [ ...state, url ]);
+  const saveOverride = (url, epoch) => {
+    setElements(state => [ ...state, { dataURI: url, epoch } ]);
+    // setSlideData(
+    //   state => state.map(el => el.id === data.id ? {...el, url } : el ),
+    // )
+  };
+
+  const saveElementsToS3 = () => {
+    // elements.forEach(el =>
+      UploadImageToS3(
+        elements[0].dataURI,
+        elements[0].epoch,
+        () => UploadImageToS3(
+          elements[1].dataURI,
+          elements[1].epoch,
+          () => UploadImageToS3(
+            elements[2].dataURI,
+            elements[2].epoch,
+            () => saveCollage(),
+          ),
+        ),
+      )
+    // );
+  };
 
   const saveCollage = async () => {
     const dataObj = {
       album_id: [albumId],
       type: data.type,
-      url: elements.join(','),
+      url: elements.map(el => epochToS3URL(el.epoch)).join(','),
       order,
     };
     let res = await fetcher('/self/photo/save', { method: 'POST', body: dataObj });
@@ -61,13 +86,13 @@ export default function ImageEditor2({
       </style>
       <div className='d-flex wrapper relative'>
         {['a', 'b', 'c'].map((el, index) => (
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1 }} key={`${data?.id}${el}`}>
             <ImageEditor
               key={`${data?.id}${el}`}
               data={{
                 ...data,
                 id: `${data?.id}${el}`,
-                url: elements[index]
+                url: elements[index]?.dataURI
               }}
               albumId={albumId}
               setSlideData={setSlideData}
@@ -80,8 +105,8 @@ export default function ImageEditor2({
         ))}
         {isCreator && (
           <>
-            {elements.length === 3 && !data?.url && (
-              <button onClick={saveCollage} className='minimal-btn save-all-btn absolute w-100'>save</button>
+            {elements.length === 3 && (
+              <button onClick={saveElementsToS3} className='minimal-btn save-all-btn absolute w-100'>save</button>
             )}
             {data?.url && (
               <button

@@ -1,4 +1,5 @@
 import React from "react";
+import { toast } from "react-hot-toast";
 
 export default function CopyToClipboard() {
   const [copied, setCopied] = React.useState(false);
@@ -13,18 +14,19 @@ export default function CopyToClipboard() {
 
   return (
     <div
-      className="d-flex"
+      className="d-flex pointer"
       style={{
         border: '1px solid black',
         width: 'fit-content',
         backgroundColor: 'white'
       }}
+      onClick={() => {
+        setCopied(true);
+        navigator.clipboard.writeText(window.location.href);
+        toast('Link copied!');
+      }}
     >
       <button
-        onClick={() => {
-          setCopied(true);
-          navigator.clipboard.writeText(window.location.href);
-        }}
         style={{
           appearance: "none",
           padding: 8,

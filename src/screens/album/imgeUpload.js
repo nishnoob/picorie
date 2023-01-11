@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk'
-
+//  TODO: Remove file
 const S3_BUCKET ='album-hosting.amirickbolchi.com';
 const REGION ='ap-south-1';
 const ACCESS_KEY ='AKIAZYOZLCQKSJJAIVPN';
