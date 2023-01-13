@@ -90,7 +90,7 @@ export const SimpleTextEditor = ({
             </button>
           </div>
         )}
-        <article className={`header-text-container ${isSaved && 'saved'}`}>
+        <article className={`text-center header-text-container ${isSaved && 'saved'}`}>
           {isSaved ? (
             <p dangerouslySetInnerHTML={{__html: data.content}}></p>
           ) : (

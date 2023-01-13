@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ContentEditable from "react-contenteditable";
 import { toast } from "react-hot-toast";
-import { ELEMENTS_ENUM } from ".";
+import { epochToS3URL } from "../../../utils";
 import fetcher from "../../../utils/fetcher";
+import UploadImageToS3 from "../imgeUpload";
 import ImageEditor from "./ImageEditor";
-
+//  TODO: add invert button
+//  TODO: add 'wide' button
 const ImageTextEditor = ({
   albumId,
   data,
@@ -13,23 +15,35 @@ const ImageTextEditor = ({
   isCreator,
 }) => {
   const [value, setValue] = useState('');
-  const [img, setImg] = useState('');
+  const [img, setImg] = useState({ url: data.url });
   const isSaved = data?.content && data?.url;
 
-  const handleSave = async () => {
-    let res = await fetcher('/self/photo/save', { method: 'POST', body: {
-      content: value,
-      url: img,
-      album_id: [albumId],
-      order,
-      type: data.type,
-    } });
-    if (res?.[0]?.id) {
-      setSlideData(
-        state => state.map(el => el.id === data.id ? res?.[0] : el ),
-      )
-      toast.success("text saved!");
+  useEffect(() => {
+    if (data?.url) {
+      setImg({ url: data.url });
     }
+  }, [data?.url])
+
+  const handleSave = async () => {
+    UploadImageToS3(
+      img?.dataURI,
+      img?.epoch,
+      async () => {
+        let res = await fetcher('/self/photo/save', { method: 'POST', body: {
+          content: value,
+          url: epochToS3URL(img?.epoch),
+          album_id: [albumId],
+          order,
+          type: data.type,
+        } });
+        if (res?.[0]?.id) {
+          setSlideData(
+            state => state.map(el => el.id === data.id ? res?.[0] : el ),
+          )
+          toast.success("text saved!");
+        }
+      }
+    );
   };
 
   const handleDelete = async () => {
@@ -48,7 +62,7 @@ const ImageTextEditor = ({
     setValue(evt.target.value);
   };
 
-  const saveOverride = (url) => setImg(url);
+  const saveOverride = (url, epoch) => setImg({dataURI: url, epoch});
 
   return (
     <>
@@ -57,7 +71,7 @@ const ImageTextEditor = ({
           .wrapper {
             pointer-events: ${isSaved ? 'none' : 'auto'};
             transition: all 0.2s ease-in-out;
-            padding: 48px 0;
+            {/* margin: 60px 0; */}
           }
           .wrapper:hover {
             background-color: ${isSaved ? 'lightgrey' : 'none'};
@@ -65,10 +79,24 @@ const ImageTextEditor = ({
           .wrapper :global(.minimal-btn.danger) {
             pointer-events: auto;
           }
+          .align-ke-upar {
+            transition: all 0.2s ease-in-out;
+          }
+          .wrapper:hover .align-ke-upar {
+            transform: scale(${isSaved ? 0.96 : 0});
+          }
           .controls {
-            padding: 16px 0;
+            padding: 16px;
             display: flex;
             justify-content: space-between;
+            left: 0;
+            right: 0;
+            z-index: 2;
+            top: -60.5px;
+          }
+          .controls.last {
+            top: auto;
+            bottom: 0;
           }
           .header-text-container {
             width: 25%;
@@ -93,16 +121,16 @@ const ImageTextEditor = ({
           }
         `}
       </style>
-      <div className="wrapper">
+      <div className="wrapper relative">
         {isCreator && (
-          <div className={`controls ${isSaved && 'opacity-0'}`}>
+          <div className={`controls ${isSaved && 'opacity-0'} absolute`}>
             <button onClick={() => setSlideData(state => state.map(el => el.id === data.id ? { id: el.id, type: null } : el ))}>
               &#x21BA; reset
             </button>
           </div>
         )}
-        <div className="d-flex align-center">
-          <article className={`header-text-container ${isSaved && 'saved'}`}>
+        <div className="align-ke-upar d-flex align-center">
+          <article className={`text-center header-text-container ${isSaved && 'saved'}`}>
             {isSaved ? (
               <p dangerouslySetInnerHTML={{__html: data.content}}></p>
             ) : (
@@ -117,7 +145,7 @@ const ImageTextEditor = ({
             data={{
               ...data,
               id: `${data?.id}a`,
-              url: data.url || img
+              url: img.url || img.dataURI
             }}
             albumId={albumId}
             setSlideData={setSlideData}
@@ -128,7 +156,7 @@ const ImageTextEditor = ({
           />
         </div>
         {isCreator && (
-          <div className='controls'>
+          <div className='controls absolute last'>
             <div></div>
             {isSaved ? (
               <button

@@ -27,7 +27,10 @@ export default function App({ Component, pageProps }) {
         }}
         toastOptions={{
           style: {
-            background: '#b3a26565',
+            background: '#FFF',
+            borderStyle: 'solid',
+            borderSize: 1,
+            borderColor: '#CEC39B'
           },
         }}
       />

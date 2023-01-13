@@ -108,6 +108,9 @@ export default function ImageEditor({
         transformerRef.current.nodes([img1]);
         groupRef.current.add(img1);
         addToLayerAndRedraw(transformerRef.current, groupRef.current);
+        if(saveOverride){
+          handleSave();
+        }
       }
     }
     catch (e) {
@@ -249,7 +252,7 @@ export default function ImageEditor({
           )}
         </article>
         {isCreator && (
-          <div className={`controls last ${(isSaved || saveOverride) && 'opacity-0'} absolute`}>
+          <div className={`controls last ${(saveOverride) && 'opacity-0'} absolute`}>
             {isSaved ? (
               <button
                 className='minimal-btn danger'

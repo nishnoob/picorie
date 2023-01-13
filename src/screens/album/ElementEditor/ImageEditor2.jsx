@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast';
 import { epochToS3URL } from '../../../utils';
 import fetcher from '../../../utils/fetcher';
@@ -13,6 +13,12 @@ export default function ImageEditor2({
   order,
 }) {
   const [elements, setElements] = useState(data?.url ? data.url.split(',') : []);
+
+  useEffect(() => {
+    if (data?.url) {
+      setElements(data.url?.split(',') || []);
+    }
+  }, [data.url])
 
   const saveOverride = (url, epoch) => {
     setElements(state => [ ...state, { dataURI: url, epoch } ]);
@@ -92,7 +98,7 @@ export default function ImageEditor2({
               data={{
                 ...data,
                 id: `${data?.id}${el}`,
-                url: elements[index]?.dataURI
+                url: elements[index]?.dataURI ||  elements[index]
               }}
               albumId={albumId}
               setSlideData={setSlideData}
@@ -105,7 +111,7 @@ export default function ImageEditor2({
         ))}
         {isCreator && (
           <>
-            {elements.length === 3 && (
+            {!data?.url && elements.length === 3 && (
               <button onClick={saveElementsToS3} className='minimal-btn save-all-btn absolute w-100'>save</button>
             )}
             {data?.url && (
