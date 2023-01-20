@@ -3,7 +3,7 @@ import { toast } from 'react-hot-toast';
 import { epochToS3URL } from '../../../utils';
 import fetcher from '../../../utils/fetcher';
 import ImageEditor from './ImageEditor';
-import UploadImageToS3 from '../imgeUpload';
+import { DeleteImageFromS3, UploadImageToS3 } from '../imgeUpload';
 
 export default function ImageEditor2({
   albumId,
@@ -63,13 +63,26 @@ export default function ImageEditor2({
 
   const handleDelete = async () => {
     if (confirm("Want to delete?")) {
-        let res = await fetcher(`/self/photo/delete/${data.id}`, { method: 'POST' });
-        if (res?.deleted) {
-          setSlideData(
-            state => state.filter(el => el.id !== data.id),
-          )
-          toast.success("photo deleted!");
-        }
+      let auxUrl = null;
+      data.url?.split(',').map((el, index) => {
+        auxUrl = el.split('/');
+        // console.log("DEL CHECK",splitUrl)
+        auxUrl = `${auxUrl[auxUrl.length - 2]}/${auxUrl[auxUrl.length - 1]}`
+        DeleteImageFromS3(
+          auxUrl,
+          async () => {
+            if (index === 2) {
+              let res = await fetcher(`/self/photo/delete/${data.id}`, { method: 'POST' });
+              if (res?.deleted) {
+                setSlideData(
+                  state => state.filter(el => el.id !== data.id),
+                )
+                toast.success("photo deleted!");
+              }
+            }
+          }
+        );
+      });
     }
   };
   

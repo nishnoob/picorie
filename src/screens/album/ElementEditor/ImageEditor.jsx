@@ -2,7 +2,7 @@ import Konva from 'konva';
 import React, { useEffect, useRef } from 'react'
 import { toast } from 'react-hot-toast';
 import fetcher from '../../../utils/fetcher';
-import UploadImageToS3 from '../imgeUpload';
+import { UploadImageToS3, DeleteImageFromS3 } from '../imgeUpload';
 
 export default function ImageEditor({
   albumId,
@@ -186,13 +186,20 @@ export default function ImageEditor({
 
   const handleDelete = async () => {
     if (confirm("Want to delete?")) {
-        let res = await fetcher(`/self/photo/delete/${data.id}`, { method: 'POST' });
-        if (res?.deleted) {
-          setSlideData(
-            state => state.filter(el => el.id !== data.id),
-          )
-          toast.success("photo deleted!");
-        }
+      let splitUrl = data.url.split('/');
+      splitUrl = `${splitUrl[splitUrl.length - 2]}/${splitUrl[splitUrl.length - 1]}`
+      DeleteImageFromS3(
+        splitUrl,
+        async () => {
+          let res = await fetcher(`/self/photo/delete/${data.id}`, { method: 'POST' });
+          if (res?.deleted) {
+            setSlideData(
+              state => state.filter(el => el.id !== data.id),
+            )
+            toast.success("photo deleted!");
+          }
+        },
+      );
     }
   };
 

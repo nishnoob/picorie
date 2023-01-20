@@ -54,7 +54,7 @@ export default function CopyToClipboard() {
             }}
           />
           <Check
-            isVisible={copied}
+            isvisible={copied.toString()}
             style={{
               color: 'green',
               position: "absolute",

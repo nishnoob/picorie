@@ -3,7 +3,7 @@ import ContentEditable from "react-contenteditable";
 import { toast } from "react-hot-toast";
 import { epochToS3URL } from "../../../utils";
 import fetcher from "../../../utils/fetcher";
-import UploadImageToS3 from "../imgeUpload";
+import { DeleteImageFromS3, UploadImageToS3 } from "../imgeUpload";
 import ImageEditor from "./ImageEditor";
 //  TODO: add invert button
 //  TODO: add 'wide' button
@@ -48,13 +48,20 @@ const ImageTextEditor = ({
 
   const handleDelete = async () => {
     if (confirm("Want to delete?")) {
-        let res = await fetcher(`/self/text/delete/${data.id}`, { method: 'POST' });
-        if (res?.deleted) {
-          setSlideData(
-            state => state.filter(el => el.id !== data.id),
-          )
-          toast.success("text deleted!");
-        }
+      let splitUrl = data.url.split('/');
+      splitUrl = `${splitUrl[splitUrl.length - 2]}/${splitUrl[splitUrl.length - 1]}`
+      DeleteImageFromS3(
+        splitUrl,
+        async () => {
+          let res = await fetcher(`/self/photo/delete/${data.id}`, { method: 'POST' });
+          if (res?.deleted) {
+            setSlideData(
+              state => state.filter(el => el.id !== data.id),
+            )
+            toast.success("text deleted!");
+          }
+        },
+      );
     }
   };
 
