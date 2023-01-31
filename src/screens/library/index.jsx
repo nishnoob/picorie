@@ -6,15 +6,20 @@ import Link from 'next/link';
 import { useUser } from '@auth0/nextjs-auth0';
 import Loader from '../../components/Loader';
 import Modal from '../../components/Modal';
+import { isDesktopWindow } from '../../utils';
 
-const Library = ({  }) => {
+const Library = () => {
   const { user, isLoading } = useUser();
-  const [albums, setAlbums] = useState(null);
+  const [albums, setAlbums] = useState([]);
   const [create, setCreate] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [createName, setCreateName] = useState('');
   const alb1 = albums?.slice(0, 3) || [];
-  const alb2 = albums?.slice(3) || [];
-  console.log("first", alb1, alb2)
+  let alb2 = albums?.slice(3) || [];
+
+  if (!isDesktopWindow()) {
+    alb2 = albums;
+  }
 
   useEffect(() => {
     if (!isLoading) {
@@ -29,10 +34,12 @@ const Library = ({  }) => {
   }, [create]);
 
   const getAlbumData = async () => {
+    setLoading(true);
     let data = await fetcher(`/self/albums/${user?.email}`);
     if (data?.length) {
       setAlbums(data);
     }
+    setLoading(false);
   };
 
   const createAlbum = async () => {
@@ -57,7 +64,7 @@ const Library = ({  }) => {
       <style jsx>
         {`
           .work-space {
-            padding-top: 48px;
+            padding: 48px 32px;
           }
           .work-space h1 {
             margin-bottom: 48px;
@@ -126,11 +133,22 @@ const Library = ({  }) => {
           .album-title-col .album-title-text:hover +  img {
             opacity: 1;
           }
+          .add-album-card.empty-add-album-card {
+            width: 250px;
+            height: 250px;
+            margin: 0 auto;
+          }
+          :global(.modal .standard-input) {
+            margin-bottom: 46px;
+          }
           @media (min-width: 992px) {
             .work-space {
               max-width: 1000px;
               margin: 0 auto;
-              padding-bottom: 0 0 128px;
+              padding-bottom: 48px 0 128px;
+            }
+            :global(.modal .standard-input) {
+              margin-bottom: 0;
             }
           }
         `}
@@ -140,31 +158,37 @@ const Library = ({  }) => {
         <div className='work-space'>
           <h1>Library</h1>
           {/* <div className='album-title' contentEditable={true}>Sunday Mass</div> */}
-          {albums ? (
+          {loading ? (
+            <div className='loader-container'>
+              <Loader />
+            </div>
+          ) : albums ? (
             <>
-              <div className='card-row d-flex'>
-                {alb1.length > 0 && alb1.map((el, index) => (
-                  <Link key={el.id} href={`/album/${el.id}`}>
-                    <div className="album-card relative">
-                      <img
-                        src={el.cover?.[0] || `https://s3.ap-south-1.amazonaws.com/album-hosting.amirickbolchi.com/_uploads_/1670177562064.jpeg`}
-                        width="100%"
-                        height="auto"
-                      />
-                      <div className='text-center absolute text-24'>{el.album_name}</div>
+              {isDesktopWindow() && (
+                <div className='card-row d-flex'>
+                  {alb1.length > 0 && alb1.map((el, index) => (
+                    <Link key={el.id} href={`/album/${el.id}`}>
+                      <div className="album-card relative">
+                        <img
+                          src={el.cover?.[0] || `https://s3.ap-south-1.amazonaws.com/album-hosting.amirickbolchi.com/_uploads_/1670177562064.jpeg`}
+                          width="100%"
+                          height="auto"
+                        />
+                        <div className='text-center absolute text-24'>{el.album_name}</div>
+                      </div>
+                    </Link>
+                  ))}
+                  {alb1.length < 3 && (
+                    <div className="add-album-card d-flex-col justify-center" onClick={() => setCreate(true)}>
+                      <div>
+                        <div className='text-center text-24'>+</div>
+                        <div className='text-center text-14'>new album</div>
+                      </div>
                     </div>
-                  </Link>
-                ))}
-                {alb1.length < 3 && (
-                  <div className="add-album-card d-flex-col justify-center" onClick={() => setCreate(true)}>
-                    <div>
-                      <div className='text-center text-24'>+</div>
-                      <div className='text-center text-14'>new album</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-              {alb1.length >= 3 && (
+                  )}
+                </div>
+              )}
+              {alb1.length >= 3 || !isDesktopWindow() && (
                 <div className='album-title-col'>
                   <div className='album-title-text' onClick={() => setCreate(true)}>+ new album</div>
                   {alb2.map(el => (
@@ -181,19 +205,19 @@ const Library = ({  }) => {
                   ))}
                 </div>
               )}
-              {create && (
-                <Modal title='Name your new album!' onClose={() => setCreate(false)}>
-                  <div className='d-flex-col'>
-                    <input className='standard-input' placeholder='album name' value={createName} onChange={e => setCreateName(e.target.value)} />
-                    <button className='standard-btn mt-36' onClick={createAlbum} disabled={createName.length < 3}>save</button>
-                  </div>
-                </Modal>
-              )}
             </>
           ) : (
-            <div className='loader-container'>
-              <Loader />
+            <div className='album-title-col'>
+              <div className='album-title-text' onClick={() => setCreate(true)}>+ new album</div>
             </div>
+          )}
+          {create && (
+            <Modal title='Name your new album!' onClose={() => setCreate(false)}>
+              <div className='d-flex-col'>
+                <input className='standard-input' placeholder='album name' value={createName} onChange={e => setCreateName(e.target.value)} />
+                <button className='standard-btn mt-36' onClick={createAlbum} disabled={createName.length < 3}>save</button>
+              </div>
+            </Modal>
           )}
         </div>
       </div>

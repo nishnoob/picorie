@@ -1,6 +1,6 @@
 export const isServer = () => typeof window === "undefined";
 
-const isDesktopWindow = () => isServer() ? true : window.innerWidth > 992;
+export const isDesktopWindow = () => isServer() ? true : window.innerWidth > 992;
 
 export const BORDER_WIDTH = 7;
 const screenWidthCorrectedMOB = isServer() ? 0 : (window.innerWidth - 32);
