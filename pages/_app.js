@@ -9,7 +9,7 @@ import Head from 'next/head';
 export default function App({ Component, pageProps }) {
   // Airtable.configure({ apiKey: process.env.AUTH0_CLIENT_ID });
   Airtable.configure({ apiKey: 'keyliL9lqi7Rgn8MT' });
-
+  //TODO: MAKE RESPONSIVE
   return (
     <>
       <Head>
