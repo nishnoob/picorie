@@ -15,6 +15,7 @@ const ImageTextEditor = ({
   isCreator,
 }) => {
   const [value, setValue] = useState('');
+  const [triggerDestroy, setTriggerDestroy] = useState(false);
   const [img, setImg] = useState({ url: data.url });
   const isSaved = (data?.content != undefined) && (data?.url != undefined);
 
@@ -25,25 +26,30 @@ const ImageTextEditor = ({
   }, [data?.url])
 
   const handleSave = async () => {
-    UploadImageToS3(
-      img?.dataURI,
-      img?.epoch,
-      async () => {
-        let res = await fetcher('/self/photo/save', { method: 'POST', body: {
-          content: value,
-          url: epochToS3URL(img?.epoch),
-          album_id: [albumId],
-          order,
-          type: data.type,
-        } });
-        if (res?.[0]?.id) {
-          setSlideData(
-            state => state.map(el => el.id === data.id ? res?.[0] : el ),
-          )
-          toast.success("text saved!");
+    if (value.length > 0 && img?.epoch) {
+      setTriggerDestroy(true);
+      UploadImageToS3(
+        img?.dataURI,
+        img?.epoch,
+        async () => {
+          let res = await fetcher('/self/photo/save', { method: 'POST', body: {
+            content: value,
+            url: epochToS3URL(img?.epoch),
+            album_id: [albumId],
+            order,
+            type: data.type,
+          } });
+          if (res?.[0]?.id) {
+            setSlideData(
+              state => state.map(el => el.id === data.id ? res?.[0] : el ),
+            )
+            toast.success("text saved!");
+          }
         }
-      }
-    );
+      );
+    } else {
+      toast.error('Cannot leave text empty!')
+    }
   };
 
   const handleDelete = async () => {
@@ -152,7 +158,7 @@ const ImageTextEditor = ({
             data={{
               ...data,
               id: `${data?.id}a`,
-              url: img.url || img.dataURI
+              url: isSaved ? (img.url || img.dataURI) : null
             }}
             albumId={albumId}
             setSlideData={setSlideData}
@@ -160,6 +166,7 @@ const ImageTextEditor = ({
             order={order}
             aspectRatio={3/4}
             saveOverride={saveOverride}
+            triggerDestroy={triggerDestroy}
           />
         </div>
         {isCreator && (

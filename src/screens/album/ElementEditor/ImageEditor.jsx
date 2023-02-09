@@ -12,6 +12,7 @@ export default function ImageEditor({
   order,
   aspectRatio = 9/16,
   saveOverride,
+  triggerDestroy,
 }) {
   const isSaved =  Boolean(data?.url);
   const stageRef = useRef();
@@ -25,6 +26,12 @@ export default function ImageEditor({
       init();
     }
   }, []);
+
+  useEffect(() => {
+    if (triggerDestroy === true) {
+      stageRef.current.destroy();
+    }
+  }, [triggerDestroy])
 
   const init = () => {
     const parentElement = document.getElementById(`slide-container-${data.id}`);
@@ -126,6 +133,9 @@ export default function ImageEditor({
   function removeWhitespaces() {
     const imgDimensions = groupRef.current.getClientRect();
     stageRef.current.width(imgDimensions.width);
+    if (saveOverride) {
+      handleSave();
+    }
   }
 
   const addCursorStyle = (node, cursorStyle = 'pointer') => {
@@ -184,7 +194,6 @@ export default function ImageEditor({
     const epoch = `_uploads_/${Date.now()}.jpeg`;
     if (saveOverride) {
       saveOverride(dataURL, epoch);
-      stageRef.current.destroy();
     } else {
       UploadImageToS3(
         dataURL,
