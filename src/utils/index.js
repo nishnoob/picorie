@@ -53,4 +53,4 @@ export const COLLAGE_CONFIG = {
   },
 };
 
-export const epochToS3URL = epoch => `https://s3.ap-south-1.amazonaws.com/album-hosting.amirickbolchi.com/${epoch}`;
+export const epochToS3URL = epoch => `https://s3.ap-south-1.amazonaws.com/picorie-assets/${epoch}`;

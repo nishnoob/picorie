@@ -68,15 +68,17 @@ const Library = () => {
           }
           .work-space h1 {
             margin-bottom: 48px;
+            padding: 0 16px;
           }
           .card-row {
             justify-content: space-between;
             flex-wrap: wrap;
             position: relative;
             z-index: 1;
+            flex-direction: column;
           }
-          .card-row :global(a) {
-            width: 32%;
+          .album-card {
+            margin-bottom: 32px; 
           }
           .album-card, .add-album-card {
             cursor: pointer;
@@ -87,13 +89,15 @@ const Library = () => {
           }
           .album-card :global(.absolute) {
             bottom: -8px;
-            right: -8px;
+            right: 0;
             text-decoration: none;
             color: black;
             background: white;
           }
           .add-album-card {
             border: 1px solid grey;
+            padding: 64px 0;
+            margin: 0 16px 32px;
           }
           .add-album-card:hover {
             border: 1px solid black;
@@ -124,9 +128,9 @@ const Library = () => {
             cursor: pointer;
           }
           .album-title-col img {
-            z-index: 0;
+            z-index: -1;
             position: absolute;
-            right: 0;
+            left: 0;
             opacity: 0;
             transform: translateY(-30%);
           }
@@ -150,6 +154,29 @@ const Library = () => {
             :global(.modal .standard-input) {
               margin-bottom: 0;
             }
+            .work-space h1 {
+              padding: 0;
+            }
+            .card-row {
+              flex-direction: row;
+              flex-wrap: no-wrap;
+            }
+            .card-row :global(a) {
+              width: 32%;
+            }
+            .album-card {
+              margin-bottom: 0; 
+              max-height: 20vh;
+              overflow: hidden;
+            }
+            .album-card :global(.absolute) {
+              right: -8px;
+            }
+            .add-album-card {
+              padding: 0;
+              margin: 0;
+              width: 32%;
+            }
           }
         `}
       </style>
@@ -170,7 +197,7 @@ const Library = () => {
                     <Link key={el.id} href={`/album/${el.id}`}>
                       <div className="album-card relative">
                         <img
-                          src={el.cover?.[0] || `https://s3.ap-south-1.amazonaws.com/album-hosting.amirickbolchi.com/_uploads_/1670177562064.jpeg`}
+                          src={el.cover?.[0] || `https://s3.ap-south-1.amazonaws.com/picorie-assets/_uploads_/1670177562064.jpeg`}
                           width="100%"
                           height="auto"
                         />
@@ -196,7 +223,7 @@ const Library = () => {
                       <div className='album-title-text'>{el.album_name}</div>
                       {el.cover?.[0] && (
                         <img
-                          src={el.cover?.[0] || `https://s3.ap-south-1.amazonaws.com/album-hosting.amirickbolchi.com/_uploads_/1670177562064.jpeg`}
+                          src={el.cover?.[0] || `https://s3.ap-south-1.amazonaws.com/picorie-assets/_uploads_/1670177562064.jpeg`}
                           width={"50%"}
                           height={"auto"}
                         />

@@ -151,7 +151,7 @@ export default function ImageEditor({
     // } else {
     const dataObj = {
       type: data.type,
-      url: `https://s3.ap-south-1.amazonaws.com/album-hosting.amirickbolchi.com/${epoch}`,
+      url: `https://s3.ap-south-1.amazonaws.com/picorie-assets/${epoch}`,
       album_id: [albumId],
       order,
     };
@@ -211,7 +211,7 @@ export default function ImageEditor({
             pointer-events: ${isSaved ? 'none' : 'auto'};
             transition: all 0.2s ease-in-out;
             margin: 60px 0;
-            height: fit-content;
+            height: 90vh;
           }
           .wrapper:hover {
             background-color: ${isSaved ? 'lightgrey' : 'none'};
@@ -255,7 +255,7 @@ export default function ImageEditor({
         )}
         <article id={`slide-container-${data?.id}`} className={`slide-container ${isSaved && 'saved'}`}>
           {isSaved && (
-            <img src={data?.url} width={"100%"} height={"100%"} />
+            <img src={data?.url} height={"100%"} />
           )}
         </article>
         {isCreator && (

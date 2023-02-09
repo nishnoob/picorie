@@ -1,9 +1,9 @@
 import AWS from 'aws-sdk'
 
-const S3_BUCKET ='album-hosting.amirickbolchi.com';
+const S3_BUCKET ='picorie-assets';
 const REGION ='ap-south-1';
-const ACCESS_KEY ='AKIAZYOZLCQKSJJAIVPN';
-const SECRET_ACCESS_KEY ='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';
+const ACCESS_KEY ='AKIAXBUZKGK6BS4XJR5P';
+const SECRET_ACCESS_KEY ='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';
 
 AWS.config.update({
     accessKeyId: ACCESS_KEY,
