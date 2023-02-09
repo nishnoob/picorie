@@ -98,7 +98,7 @@ const Album = ({ albumId }) => {
               key={el.id}
               setSlideData={setSlideData}
               order={index}
-              veryFirst={index === (slideData.length - 3)}
+              veryFirst={index === (slideData.length - 2)}
               isPrevSaved={Boolean(slideData[index-1]?.url || slideData[index-1]?.content)}
               isCreator={isCreator}
             />

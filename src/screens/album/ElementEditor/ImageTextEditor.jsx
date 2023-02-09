@@ -16,7 +16,7 @@ const ImageTextEditor = ({
 }) => {
   const [value, setValue] = useState('');
   const [img, setImg] = useState({ url: data.url });
-  const isSaved = data?.content && data?.url;
+  const isSaved = (data?.content != undefined) && (data?.url != undefined);
 
   useEffect(() => {
     if (data?.url) {
@@ -95,11 +95,11 @@ const ImageTextEditor = ({
           .controls {
             padding: 16px;
             display: flex;
-            justify-content: space-between;
+            justify-content: end;
             left: 0;
             right: 0;
             z-index: 2;
-            top: -60.5px;
+            top: 0;
           }
           .controls.last {
             top: auto;
@@ -131,7 +131,7 @@ const ImageTextEditor = ({
       <div className="wrapper relative">
         {isCreator && (
           <div className={`controls ${isSaved && 'opacity-0'} absolute`}>
-            <button onClick={() => setSlideData(state => state.map(el => el.id === data.id ? { id: el.id, type: null } : el ))}>
+            <button className="minimal-btn" onClick={() => setSlideData(state => state.map(el => el.id === data.id ? { id: el.id, type: null } : el ))}>
               &#x21BA; reset
             </button>
           </div>
@@ -174,7 +174,7 @@ const ImageTextEditor = ({
               </button>
               ) : (
               <button
-                className='save-btn'
+                className='minimal-btn save-btn'
                 onClick={handleSave}
                 disabled={isSaved}
               >

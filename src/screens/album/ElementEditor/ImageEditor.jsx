@@ -29,8 +29,13 @@ export default function ImageEditor({
   const init = () => {
     const parentElement = document.getElementById(`slide-container-${data.id}`);
     if (parentElement && !isSaved) {
-      const canvasWidth = parentElement.offsetWidth;
-      const canvasHeight = parentElement.offsetWidth * (aspectRatio);
+      let canvasWidth = parentElement.offsetWidth;
+      let canvasHeight = parentElement.offsetWidth * (aspectRatio);
+
+      if (saveOverride) {
+        canvasWidth = window.innerWidth * 0.70;
+        canvasHeight = window.innerWidth * 0.70 * aspectRatio;
+      }
 
       stageRef.current = new Konva.Stage({
         container: `slide-container-${data.id}`,
@@ -88,7 +93,7 @@ export default function ImageEditor({
         var img_width = img.width;
         var img_height = img.height;
 
-        var widthRatio = document.getElementById(`slide-container-${data.id}`).offsetWidth / img_width;
+        var widthRatio = document.getElementById(`slide-container-${data.id}`).offsetHeight / img_height;
         var newWidth = img_width * widthRatio,
             newHeight = img_height * widthRatio
         img1 = new Konva.Image({
@@ -116,6 +121,11 @@ export default function ImageEditor({
     catch (e) {
       console.log('error', e);
     }
+  }
+  
+  function removeWhitespaces() {
+    const imgDimensions = groupRef.current.getClientRect();
+    stageRef.current.width(imgDimensions.width);
   }
 
   const addCursorStyle = (node, cursorStyle = 'pointer') => {
@@ -240,20 +250,22 @@ export default function ImageEditor({
           }
           .slide-container {
             box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.15);
-            height: 100%;
-            width: 100%;
+            max-height: calc( 100% * ${aspectRatio} );
           }
         `}
       </style>
       <div className='wrapper'>
         {isCreator && (
           <div className={`controls ${isSaved && 'opacity-0'} absolute`}>
-            <button className='minimal-btn' onClick={resetHandler}>
+            <button className={`minimal-btn ${(saveOverride) && 'display-none'} `} onClick={resetHandler}>
               &#x21BA; reset
+            </button>
+            <button className='minimal-btn' onClick={removeWhitespaces}>
+              remove whitespaces
             </button>
           </div>
         )}
-        <article id={`slide-container-${data?.id}`} className={`slide-container ${isSaved && 'saved'}`}>
+        <article id={`slide-container-${data?.id}`} className={`slide-container ${isSaved && 'saved'} d-flex justify-center`}>
           {isSaved && (
             <img src={data?.url} height={"100%"} />
           )}
@@ -280,7 +292,6 @@ export default function ImageEditor({
         )}
         <input
           className='opacity-0'
-          // hidden
           type="file"
           ref={uploadRef}
           onChange={(e) => addImage(e.target.files[0])}

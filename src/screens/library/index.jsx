@@ -71,7 +71,7 @@ const Library = () => {
             padding: 0 16px;
           }
           .card-row {
-            justify-content: space-between;
+            justify-content: space-evenly;
             flex-wrap: wrap;
             position: relative;
             z-index: 1;
@@ -83,6 +83,8 @@ const Library = () => {
           .album-card, .add-album-card {
             cursor: pointer;
             transition: all 0.2s ease;
+            min-width: 29%;
+            height: 180px;
           }
           .album-card:hover {
             transform: scale(1.01);
@@ -145,6 +147,10 @@ const Library = () => {
           :global(.modal .standard-input) {
             margin-bottom: 46px;
           }
+          .album-card .clipper {
+            overflow: hidden;
+            height: 180px;
+          }
           @media (min-width: 992px) {
             .work-space {
               max-width: 1000px;
@@ -195,12 +201,15 @@ const Library = () => {
                 <div className='card-row d-flex'>
                   {alb1.length > 0 && alb1.map((el, index) => (
                     <Link key={el.id} href={`/album/${el.id}`}>
-                      <div className="album-card relative">
-                        <img
-                          src={el.cover?.[0] || `https://s3.ap-south-1.amazonaws.com/picorie-assets/_uploads_/1670177562064.jpeg`}
-                          width="100%"
-                          height="auto"
-                        />
+                      <div className="album-card relative d-flex-col justify-center align-center">
+                        <div className='clipper'>
+                          <img
+                            src={el.cover?.[0] || 'https://picorie-assets.s3.ap-south-1.amazonaws.com/_uploads_/no-img.png'}
+                            width="100%"
+                            height="auto"
+                            alt='404'
+                          />
+                        </div>
                         <div className='text-center absolute text-24'>{el.album_name}</div>
                       </div>
                     </Link>
