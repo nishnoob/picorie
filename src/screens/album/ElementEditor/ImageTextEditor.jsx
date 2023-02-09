@@ -78,7 +78,7 @@ const ImageTextEditor = ({
           .wrapper {
             pointer-events: ${isSaved ? 'none' : 'auto'};
             transition: all 0.2s ease-in-out;
-            {/* margin: 60px 0; */}
+            height: 90vh;
           }
           .wrapper:hover {
             background-color: ${isSaved ? 'lightgrey' : 'none'};
@@ -90,7 +90,7 @@ const ImageTextEditor = ({
             transition: all 0.2s ease-in-out;
           }
           .wrapper:hover .align-ke-upar {
-            transform: scale(${isSaved ? 0.96 : 0});
+            transform: scale(${isSaved ? 0.96 : 1});
           }
           .controls {
             padding: 16px;
@@ -106,9 +106,9 @@ const ImageTextEditor = ({
             bottom: 0;
           }
           .header-text-container {
-            width: 25%;
             margin-right: 24px;
             height: fit-content;
+            flex: 1;
           }
           .header-text-container:not(.saved) {
             background-color: lightgrey;
@@ -122,7 +122,7 @@ const ImageTextEditor = ({
             font-size: 24px;
           }
           .wrapper :global(.wrapper) {
-            flex: 1;
+            flex: ${isSaved ? `3 1 3` : 3};
           }
           @media (min-width: 992px) {
           }

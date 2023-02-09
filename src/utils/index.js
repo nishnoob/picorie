@@ -1,6 +1,6 @@
 export const isServer = () => typeof window === "undefined";
 
-const isDesktopWindow = () => isServer() ? true : window.innerWidth > 992;
+export const isDesktopWindow = () => isServer() ? true : window.innerWidth > 992;
 
 export const BORDER_WIDTH = 7;
 const screenWidthCorrectedMOB = isServer() ? 0 : (window.innerWidth - 32);
@@ -53,4 +53,4 @@ export const COLLAGE_CONFIG = {
   },
 };
 
-export const epochToS3URL = epoch => `https://s3.ap-south-1.amazonaws.com/album-hosting.amirickbolchi.com/${epoch}`;
+export const epochToS3URL = epoch => `https://s3.ap-south-1.amazonaws.com/picorie-assets/${epoch}`;

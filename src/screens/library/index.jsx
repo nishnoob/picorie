@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useUser } from '@auth0/nextjs-auth0';
 import Loader from '../../components/Loader';
 import Modal from '../../components/Modal';
+import { isDesktopWindow } from '../../utils';
 
 const Library = ({  }) => {
   const { user, isLoading } = useUser();
@@ -61,15 +62,17 @@ const Library = ({  }) => {
           }
           .work-space h1 {
             margin-bottom: 48px;
+            padding: 0 16px;
           }
           .card-row {
             justify-content: space-between;
             flex-wrap: wrap;
             position: relative;
             z-index: 1;
+            flex-direction: column;
           }
-          .card-row :global(a) {
-            width: 32%;
+          .album-card {
+            margin-bottom: 32px; 
           }
           .album-card, .add-album-card {
             cursor: pointer;
@@ -80,13 +83,15 @@ const Library = ({  }) => {
           }
           .album-card :global(.absolute) {
             bottom: -8px;
-            right: -8px;
+            right: 0;
             text-decoration: none;
             color: black;
             background: white;
           }
           .add-album-card {
             border: 1px solid grey;
+            padding: 64px 0;
+            margin: 0 16px 32px;
           }
           .add-album-card:hover {
             border: 1px solid black;
@@ -117,9 +122,9 @@ const Library = ({  }) => {
             cursor: pointer;
           }
           .album-title-col img {
-            z-index: 0;
+            z-index: -1;
             position: absolute;
-            right: 0;
+            left: 0;
             opacity: 0;
             transform: translateY(-30%);
           }
@@ -132,6 +137,29 @@ const Library = ({  }) => {
               margin: 0 auto;
               padding-bottom: 0 0 128px;
             }
+            .work-space h1 {
+              padding: 0;
+            }
+            .card-row {
+              flex-direction: row;
+              flex-wrap: no-wrap;
+            }
+            .card-row :global(a) {
+              width: 32%;
+            }
+            .album-card {
+              margin-bottom: 0; 
+              max-height: 20vh;
+              overflow: hidden;
+            }
+            .album-card :global(.absolute) {
+              right: -8px;
+            }
+            .add-album-card {
+              padding: 0;
+              margin: 0;
+              width: 32%;
+            }
           }
         `}
       </style>
@@ -142,12 +170,20 @@ const Library = ({  }) => {
           {/* <div className='album-title' contentEditable={true}>Sunday Mass</div> */}
           {albums ? (
             <>
+              {!isDesktopWindow() && (
+                <div className="add-album-card d-flex-col justify-center" onClick={() => setCreate(true)}>
+                  <div>
+                    <div className='text-center text-24'>+</div>
+                    <div className='text-center text-14'>new album</div>
+                  </div>
+                </div>
+              )}
               <div className='card-row d-flex'>
-                {alb1.length > 0 && alb1.map((el, index) => (
+                {[...(isDesktopWindow() ?  alb1 : albums)].map((el, index) => (
                   <Link key={el.id} href={`/album/${el.id}`}>
                     <div className="album-card relative">
                       <img
-                        src={el.cover?.[0] || `https://s3.ap-south-1.amazonaws.com/album-hosting.amirickbolchi.com/_uploads_/1670177562064.jpeg`}
+                        src={el.cover?.[0] || `https://s3.ap-south-1.amazonaws.com/picorie-assets/_uploads_/1670177562064.jpeg`}
                         width="100%"
                         height="auto"
                       />
@@ -155,7 +191,7 @@ const Library = ({  }) => {
                     </div>
                   </Link>
                 ))}
-                {alb1.length < 3 && (
+                {alb1.length < 3 && isDesktopWindow() && (
                   <div className="add-album-card d-flex-col justify-center" onClick={() => setCreate(true)}>
                     <div>
                       <div className='text-center text-24'>+</div>
@@ -165,14 +201,14 @@ const Library = ({  }) => {
                 )}
               </div>
               {alb1.length >= 3 && (
-                <div className='album-title-col'>
+                <div className='album-title-col desktop--only'>
                   <div className='album-title-text' onClick={() => setCreate(true)}>+ new album</div>
                   {alb2.map(el => (
                     <Link key={el.id} href={`/album/${el.id}`}>
                       <div className='album-title-text'>{el.album_name}</div>
                       {el.cover?.[0] && (
                         <img
-                          src={el.cover?.[0] || `https://s3.ap-south-1.amazonaws.com/album-hosting.amirickbolchi.com/_uploads_/1670177562064.jpeg`}
+                          src={el.cover?.[0] || `https://s3.ap-south-1.amazonaws.com/picorie-assets/_uploads_/1670177562064.jpeg`}
                           width={"50%"}
                           height={"auto"}
                         />
