@@ -1,7 +1,7 @@
 const fetcher = (url, options = {}) => {
   
   return fetch(
-    `http://localhost:3000/api${url}`,
+    `/api${url}`,
     {
       method: options.method || 'GET',
       headers: {
