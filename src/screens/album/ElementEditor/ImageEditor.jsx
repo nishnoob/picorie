@@ -283,7 +283,7 @@ export default function ImageEditor({
         )}
         <article id={`slide-container-${data?.id}`} className={`slide-container ${isSaved && 'saved'} justify-center`}>
           {isSaved && (
-            <img src={data?.url} height={'100%'} />
+            <img src={data?.url} height={"100%"} />
           )}
         </article>
         {isCreator && (

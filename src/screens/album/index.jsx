@@ -9,8 +9,9 @@ import CopyToClipboard from '../../components/CopyToClipboard';
 const Album = ({ albumId }) => {
   // TODO: protect with email
   const [slideData, setSlideData] = useState([]);
+  const [albumData, setAlbumData] = useState({ id: albumId });
   const { user, isLoading } = useUser();
-  const isCreator = Boolean(user?.email);
+  const isCreator = Boolean(user?.email == albumData?.email);
 
   useEffect(() => {
     if (albumId && !isLoading) {
@@ -20,7 +21,8 @@ const Album = ({ albumId }) => {
 
   const getAlbumData = async () => {
     let data = await fetcher(`/self/album/${albumId}`);
-    data = data.sort((a,b) => a.order - b.order);
+    setAlbumData({ ...data });
+    data = data.frames.sort((a,b) => a.order - b.order);
     setSlideData(isCreator ? data.length > 0 ?
       [
         ...data,

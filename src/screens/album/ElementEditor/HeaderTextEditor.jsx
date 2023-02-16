@@ -21,17 +21,21 @@ export const HeaderTextEditor = ({
   }, [inputRef]);
 
   const handleSave = async () => {
-    let res = await fetcher('/self/text/save', { method: 'POST', body: {
-      content: value,
-      album_id: [albumId],
-      order,
-      type: data.type,
-    } });
-    if (res?.[0]?.id) {
-      setSlideData(
-        state => state.map(el => el.id === data.id ? res?.[0] : el ),
-      )
-      toast.success("text saved!");
+    if (value.length > 0) {
+      let res = await fetcher('/self/text/save', { method: 'POST', body: {
+        content: value,
+        album_id: [albumId],
+        order,
+        type: data.type,
+      } });
+      if (res?.[0]?.id) {
+        setSlideData(
+          state => state.map(el => el.id === data.id ? res?.[0] : el ),
+        )
+        toast.success("text saved!");
+      }
+    } else {
+      toast.error("Write something before trying to save!");
     }
   };
 
