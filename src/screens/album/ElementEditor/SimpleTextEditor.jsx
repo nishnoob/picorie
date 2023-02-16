@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ContentEditable from "react-contenteditable";
 import { toast } from "react-hot-toast";
 import { ELEMENTS_ENUM } from ".";
@@ -13,6 +13,13 @@ export const SimpleTextEditor = ({
 }) => {
   const [value, setValue] = useState('');
   const isSaved = data?.content;
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [inputRef]);
 
   const handleSave = async () => {
     let res = await fetcher('/self/text/save', { method: 'POST', body: {
@@ -95,7 +102,7 @@ export const SimpleTextEditor = ({
             <p dangerouslySetInnerHTML={{__html: data.content}}></p>
           ) : (
             <ContentEditable
-            
+              innerRef={inputRef}
               html={value}
               onChange={handleChange}
             />

@@ -20,6 +20,10 @@ export default function ImageEditor({
   const groupRef = useRef();
   const transformerRef = useRef();
   const uploadRef = useRef();
+  const canvasDimensions = useRef({
+    height: 0,
+    width: 0,
+  });
 
   useEffect(() => {
     if (!data?.url) {
@@ -43,6 +47,9 @@ export default function ImageEditor({
         canvasWidth = window.innerWidth * 0.70;
         canvasHeight = window.innerWidth * 0.70 * aspectRatio;
       }
+
+      canvasDimensions.current.height = canvasHeight;
+      canvasDimensions.current.width = canvasWidth;
 
       stageRef.current = new Konva.Stage({
         container: `slide-container-${data.id}`,
@@ -100,7 +107,7 @@ export default function ImageEditor({
         var img_width = img.width;
         var img_height = img.height;
 
-        var widthRatio = document.getElementById(`slide-container-${data.id}`).offsetHeight / img_height;
+        var widthRatio = canvasDimensions.current.height / img_height;
         var newWidth = img_width * widthRatio,
             newHeight = img_height * widthRatio
         img1 = new Konva.Image({
@@ -190,7 +197,7 @@ export default function ImageEditor({
     transformerRef.current.nodes([]);
     addToLayerAndRedraw(transformerRef.current);
     // const dataURL = stageRef.current.toDataURL({ pixelRatio: 2 });
-    const dataURL = stageRef.current.toDataURL();
+    const dataURL = stageRef.current.toDataURL({ pixelRatio: 2 });
     const epoch = `_uploads_/${Date.now()}.jpeg`;
     if (saveOverride) {
       saveOverride(dataURL, epoch);
@@ -259,7 +266,7 @@ export default function ImageEditor({
           }
           .slide-container {
             box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.15);
-            max-height: calc( 100% * ${aspectRatio} );
+            height: 100%;
           }
         `}
       </style>
@@ -274,9 +281,9 @@ export default function ImageEditor({
             </button>
           </div>
         )}
-        <article id={`slide-container-${data?.id}`} className={`slide-container ${isSaved && 'saved'} d-flex justify-center`}>
+        <article id={`slide-container-${data?.id}`} className={`slide-container ${isSaved && 'saved'} justify-center`}>
           {isSaved && (
-            <img src={data?.url} height={"100%"} />
+            <img src={data?.url} height={'100%'} />
           )}
         </article>
         {isCreator && (
@@ -302,6 +309,7 @@ export default function ImageEditor({
         <input
           className='opacity-0'
           type="file"
+          accept="image/png, image/jpeg"
           ref={uploadRef}
           onChange={(e) => addImage(e.target.files[0])}
         />

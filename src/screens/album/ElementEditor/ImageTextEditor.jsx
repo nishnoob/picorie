@@ -84,7 +84,6 @@ const ImageTextEditor = ({
           .wrapper {
             pointer-events: ${isSaved ? 'none' : 'auto'};
             transition: all 0.2s ease-in-out;
-            height: 90vh;
           }
           .wrapper:hover {
             background-color: ${isSaved ? 'lightgrey' : 'none'};
@@ -124,11 +123,14 @@ const ImageTextEditor = ({
           .header-text-container :global(p) {
             outline: none;
             width: 100%;
-            min-height: 60vh;
             font-size: 24px;
           }
+          .header-text-container :global(div) {
+            min-height: 60vh;
+          }
           .wrapper :global(.wrapper) {
-            flex: ${isSaved ? `3 1 3` : 3};
+            min-width: 50%;
+            text-align: center;
           }
           @media (min-width: 992px) {
           }
