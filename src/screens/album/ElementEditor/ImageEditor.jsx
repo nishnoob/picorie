@@ -196,18 +196,32 @@ export default function ImageEditor({
   const handleSave = async () => {
     transformerRef.current.nodes([]);
     addToLayerAndRedraw(transformerRef.current);
-    // const dataURL = stageRef.current.toDataURL({ pixelRatio: 2 });
-    const dataURL = stageRef.current.toDataURL({ pixelRatio: 2 });
-    const epoch = `_uploads_/${Date.now()}.jpeg`;
-    if (saveOverride) {
-      saveOverride(dataURL, epoch);
-    } else {
-      UploadImageToS3(
-        dataURL,
-        epoch,
-        () => saveToBE(epoch),
-      );
-    }
+    const dataURL = await stageRef.current.toBlob({ pixelRatio: 2 });
+    new Compressor(dataURL, {
+      quality: 0.9,
+      retainExif: true,
+      success(result) {
+        var reader = new FileReader();
+        reader.readAsDataURL(result); 
+        reader.onloadend = function() {
+          var compressedBase64data = reader.result;                
+          // console.log(base64data);
+          const epoch = `_uploads_/${Date.now()}.jpeg`;
+          if (saveOverride) {
+            saveOverride(compressedBase64data, epoch);
+          } else {
+            UploadImageToS3(
+              compressedBase64data,
+              epoch,
+              () => saveToBE(epoch),
+            );
+          }
+        }
+      },
+      error(err) {
+        console.log(err.message);
+      },
+    });
   };
 
   const handleDelete = async () => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import fetcher from '../../utils/fetcher';
 import Navbar from '../../components/Navbar';
 import Loader from '../../components/Loader';
@@ -9,9 +9,10 @@ import CopyToClipboard from '../../components/CopyToClipboard';
 const Album = ({ albumId }) => {
   // TODO: protect with email
   const [slideData, setSlideData] = useState([]);
+  const [isFetching, setIsFetching] = useState(true);
   const [albumData, setAlbumData] = useState({ id: albumId });
   const { user, isLoading } = useUser();
-  const isCreator = Boolean(user?.email == albumData?.email);
+  const isCreator = useRef(user?.email == albumData?.email);
 
   useEffect(() => {
     if (albumId && !isLoading) {
@@ -20,10 +21,13 @@ const Album = ({ albumId }) => {
   }, [albumId, isLoading]);
 
   const getAlbumData = async () => {
+    setIsFetching(true);
     let data = await fetcher(`/self/album/${albumId}`);
     setAlbumData({ ...data });
+    const aData = data;
+    isCreator.current = user?.email == aData?.email;
     data = data.frames.sort((a,b) => a.order - b.order);
-    setSlideData(isCreator ? data.length > 0 ?
+    setSlideData(user?.email == aData?.email ? data.length > 0 ?
       [
         ...data,
         {
@@ -40,6 +44,7 @@ const Album = ({ albumId }) => {
         type: null,
       }
     ] : data);
+    setIsFetching(false);
   };
 
   return (
@@ -85,7 +90,7 @@ const Album = ({ albumId }) => {
       <div className="parent">
         <Navbar />
         <div className='work-space relative'>
-          {isCreator && (
+          {isCreator.current && (
             <div className='note absolute'>
               <h3>Story lives a lifetime only if you share!</h3>
               <div className='text-14 mb-16'> Use the bottom link to Get people talking about your story </div>
@@ -93,7 +98,7 @@ const Album = ({ albumId }) => {
             </div>
           )}
           {/* <div className='album-title' contentEditable={true}>Sunday Mass</div> */}
-          {slideData.length ? slideData.map((el, index) => (
+          {slideData.length > 0 && slideData.map((el, index) => (
             <ElementEditor
               albumId={albumId}
               data={el}
@@ -102,9 +107,10 @@ const Album = ({ albumId }) => {
               order={index}
               veryFirst={index === (slideData.length - 2)}
               isPrevSaved={Boolean(slideData[index-1]?.url || slideData[index-1]?.content)}
-              isCreator={isCreator}
+              isCreator={isCreator.current}
             />
-          )) : (
+          ))}
+          {isFetching && (
             <div className='loader-container'>
               <Loader />
             </div>
