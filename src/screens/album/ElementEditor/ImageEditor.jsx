@@ -1,6 +1,8 @@
+import Compressor from 'compressorjs';
 import Konva from 'konva';
 import React, { useEffect, useRef } from 'react'
 import { toast } from 'react-hot-toast';
+import { isDesktopWindow } from '../../../utils';
 import fetcher from '../../../utils/fetcher';
 import { UploadImageToS3, DeleteImageFromS3 } from '../imgeUpload';
 
@@ -86,6 +88,10 @@ export default function ImageEditor({
         y: canvasHeight / 2,
         fontSize: 20,
       });
+      textVar.on('click', () => {
+        uploadRef.current.click();
+      })
+      addCursorStyle(textVar, 'pointer');
       groupRef.current.add(textVar);
       layerRef.current.add(groupRef.current);
 
@@ -251,7 +257,7 @@ export default function ImageEditor({
             pointer-events: ${isSaved ? 'none' : 'auto'};
             transition: all 0.2s ease-in-out;
             margin: 60px 0;
-            height: 90vh;
+            height: ${isDesktopWindow() ? '90vh' : 'auto'};
           }
           .wrapper:hover {
             background-color: ${isSaved ? 'lightgrey' : 'none'};
@@ -295,9 +301,9 @@ export default function ImageEditor({
             </button>
           </div>
         )}
-        <article id={`slide-container-${data?.id}`} className={`slide-container ${isSaved && 'saved'} justify-center`}>
+        <article id={`slide-container-${data?.id}`} className={`slide-container ${isSaved && 'saved'} justify-center text-center`}>
           {isSaved && (
-            <img src={data?.url} height={"100%"} />
+            <img src={data?.url} {...{ width: isDesktopWindow() ? undefined : "100%", height: isDesktopWindow() ? "100%" : undefined }} />
           )}
         </article>
         {isCreator && (

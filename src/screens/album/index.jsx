@@ -5,6 +5,7 @@ import Loader from '../../components/Loader';
 import { useUser } from '@auth0/nextjs-auth0';
 import ElementEditor from './ElementEditor';
 import CopyToClipboard from '../../components/CopyToClipboard';
+import { isDesktopWindow } from '../../utils';
 
 const Album = ({ albumId }) => {
   // TODO: protect with email
@@ -12,7 +13,7 @@ const Album = ({ albumId }) => {
   const [isFetching, setIsFetching] = useState(true);
   const [albumData, setAlbumData] = useState({ id: albumId });
   const { user, isLoading } = useUser();
-  const isCreator = useRef(user?.email == albumData?.email);
+  const isCreator = useRef(isDesktopWindow() && (user?.email == albumData?.email));
 
   useEffect(() => {
     if (albumId && !isLoading) {
@@ -25,9 +26,10 @@ const Album = ({ albumId }) => {
     let data = await fetcher(`/self/album/${albumId}`);
     setAlbumData({ ...data });
     const aData = data;
-    isCreator.current = user?.email == aData?.email;
+    var tempIsCreator = isDesktopWindow() && (user?.email == aData?.email);
+    isCreator.current = tempIsCreator;
     data = data.frames.sort((a,b) => a.order - b.order);
-    setSlideData(user?.email == aData?.email ? data.length > 0 ?
+    setSlideData(tempIsCreator ? data.length > 0 ?
       [
         ...data,
         {
