@@ -115,15 +115,17 @@ const Library = () => {
           }
           .album-title-col {
             margin-top: 64px;
-            text-align: right;
+            align-items: end;
           }
           .album-title-col :global(a) {
             text-decoration: none;
+            width: fit-content;
           }
           .album-title-col .album-title-text {
             font-size: 48px;
             color: black;
             transition: all 0.2s ease;
+            width: fit-content;
           }
           .album-title-col .album-title-text:hover {
             opacity: 0.5;
@@ -197,6 +199,7 @@ const Library = () => {
             </div>
           ) : albums ? (
             <>
+              {/* Tiles */}
               {isDesktopWindow() && (
                 <div className='card-row d-flex'>
                   {alb1.length > 0 && alb1.map((el, index) => (
@@ -224,8 +227,9 @@ const Library = () => {
                   )}
                 </div>
               )}
-              {alb1.length >= 3 || !isDesktopWindow() && (
-                <div className='album-title-col'>
+              {/* List */}
+              {alb1.length >= 3 && isDesktopWindow() && (
+                <div className='album-title-col d-flex-col'>
                   <div className='album-title-text' onClick={() => setCreate(true)}>+ new album</div>
                   {alb2.map(el => (
                     <Link key={el.id} href={`/album/${el.id}`}>

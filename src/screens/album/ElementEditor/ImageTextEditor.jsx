@@ -77,6 +77,13 @@ const ImageTextEditor = ({
 
   const saveOverride = (url, epoch) => setImg({dataURI: url, epoch});
 
+  const pasteAsPlainText = (event) => {
+    event.preventDefault()
+  
+    const text = event.clipboardData.getData('text/plain')
+    document.execCommand('insertHTML', false, text)
+  }
+
   return (
     <>
       <style jsx>
@@ -152,6 +159,7 @@ const ImageTextEditor = ({
               <ContentEditable
                 html={value}
                 onChange={handleChange}
+                onPaste={pasteAsPlainText}
               />
             )}
           </article>

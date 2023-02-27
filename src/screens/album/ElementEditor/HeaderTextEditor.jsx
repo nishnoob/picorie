@@ -55,6 +55,13 @@ export const HeaderTextEditor = ({
     setValue(evt.target.value);
   };
 
+  const pasteAsPlainText = (event) => {
+    event.preventDefault()
+  
+    const text = event.clipboardData.getData('text/plain')
+    document.execCommand('insertHTML', false, text)
+  }
+
   return (
     <>
       <style jsx>
@@ -118,6 +125,7 @@ export const HeaderTextEditor = ({
               innerRef={inputRef}
               html={value}
               onChange={handleChange}
+              onPaste={pasteAsPlainText}
             />
           )}
         </article>

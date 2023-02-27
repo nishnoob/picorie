@@ -52,6 +52,13 @@ export const SimpleTextEditor = ({
     setValue(evt.target.value);
   };
 
+  const pasteAsPlainText = (event) => {
+    event.preventDefault()
+  
+    const text = event.clipboardData.getData('text/plain')
+    document.execCommand('insertHTML', false, text)
+  }
+
   return (
     <>
       <style jsx>
@@ -105,6 +112,7 @@ export const SimpleTextEditor = ({
               innerRef={inputRef}
               html={value}
               onChange={handleChange}
+              onPaste={pasteAsPlainText}
             />
           )}
         </article>
