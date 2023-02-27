@@ -15,6 +15,7 @@ export default function ImageEditor({
   aspectRatio = 9/16,
   saveOverride,
   triggerDestroy,
+  portrait = false,
 }) {
   const isSaved =  Boolean(data?.url);
   const stageRef = useRef();
@@ -45,9 +46,12 @@ export default function ImageEditor({
       let canvasWidth = parentElement.offsetWidth;
       let canvasHeight = parentElement.offsetWidth * (aspectRatio);
 
-      if (saveOverride) {
+      if (saveOverride && !portrait) {
         canvasWidth = window.innerWidth * 0.70;
         canvasHeight = window.innerWidth * 0.70 * aspectRatio;
+      } else if (portrait) {
+        canvasWidth = parentElement.offsetWidth * aspectRatio - 36;
+        canvasHeight = parentElement.offsetHeight;
       }
 
       canvasDimensions.current.height = canvasHeight;
@@ -303,7 +307,7 @@ export default function ImageEditor({
         )}
         <article id={`slide-container-${data?.id}`} className={`slide-container ${isSaved && 'saved'} justify-center text-center`}>
           {isSaved && (
-            <img src={data?.url} {...{ width: isDesktopWindow() ? undefined : "100%", height: isDesktopWindow() ? "100%" : undefined }} />
+            <img src={data?.url} loading="lazy" {...{ width: isDesktopWindow() ? undefined : "100%", height: isDesktopWindow() ? "100%" : undefined }} />
           )}
         </article>
         {isCreator && (

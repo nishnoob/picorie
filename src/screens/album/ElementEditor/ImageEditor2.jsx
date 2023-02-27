@@ -101,29 +101,52 @@ export default function ImageEditor2({
           .wrapper .save-all-btn:hover {
             background-color: #000;
           }
+          .controls {
+            padding: 16px;
+            display: flex;
+            justify-content: end;
+            left: 0;
+            right: 0;
+            z-index: 2;
+            top: 0;
+          }
+          .controls.last {
+            top: auto;
+            bottom: 0;
+          }
         `}
       </style>
-      <div className='d-flex wrapper relative'>
-        {['a', 'b', 'c'].map((el, index) => (
-          <div style={{ flex: 1 }} key={`${data?.id}${el}`}>
-            <ImageEditor
-              key={`${data?.id}${el}`}
-              data={{
-                ...data,
-                id: `${data?.id}${el}`,
-                url: elements[index]?.dataURI ||  elements[index]
-              }}
-              albumId={albumId}
-              setSlideData={setSlideData}
-              isCreator={isCreator}
-              order={order}
-              aspectRatio={16/9}
-              saveOverride={saveOverride}
-            />
+      <div className='relative'>
+        {/* {isCreator && (
+          <div className={`controls ${isSaved && 'opacity-0'} absolute`}>
+            <button className="minimal-btn" onClick={() => setSlideData(state => state.map(el => el.id === data.id ? { id: el.id, type: null } : el ))}>
+              &#x21BA; reset
+            </button>
           </div>
-        ))}
+        )} */}
+        <div className="d-flex wrapper">
+          {['a', 'b', 'c'].map((el, index) => (
+            // <div  key={`${data?.id}${el}`}>
+              <ImageEditor
+                key={`${data?.id}${el}`}
+                data={{
+                  ...data,
+                  id: `${data?.id}${el}`,
+                  url: elements[index]?.dataURI ||  elements[index]
+                }}
+                albumId={albumId}
+                setSlideData={setSlideData}
+                isCreator={isCreator}
+                order={order}
+                aspectRatio={16/9}
+                saveOverride={saveOverride}
+                portrait
+              />
+            // </div>
+          ))}
+        </div>
         {isCreator && (
-          <>
+          <div className='controls absolute last'>
             {!data?.url && elements.length === 3 && (
               <button onClick={saveElementsToS3} className='minimal-btn save-all-btn absolute w-100'>save</button>
             )}
@@ -135,7 +158,7 @@ export default function ImageEditor2({
                 delete
               </button>
             )}
-          </>
+          </div>
         )}
       </div>
     </>
