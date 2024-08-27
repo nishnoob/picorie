@@ -1,5 +1,5 @@
 import Compressor from 'compressorjs';
-import Konva from 'konva';
+// import Konva from 'konva';
 import React, { useEffect, useRef } from 'react'
 import { toast } from 'react-hot-toast';
 import { isDesktopWindow } from '../../../utils';

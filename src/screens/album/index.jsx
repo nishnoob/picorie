@@ -6,14 +6,18 @@ import { useUser } from '@auth0/nextjs-auth0';
 import ElementEditor from './ElementEditor';
 import CopyToClipboard from '../../components/CopyToClipboard';
 import { isDesktopWindow } from '../../utils';
+import { BlocksEditor } from './NewEditor/BlocksEditor';
 
 const Album = ({ albumId }) => {
   // TODO: protect with email
   const [slideData, setSlideData] = useState([]);
   const [isFetching, setIsFetching] = useState(true);
   const [albumData, setAlbumData] = useState({ id: albumId });
+  const [blocks, setBlocks] = useState([]);
+  
+
   const { user, isLoading } = useUser();
-  const isCreator = useRef(isDesktopWindow() && (user?.email == albumData?.email));
+  const isCreator = useRef(user?.email == albumData?.email);
 
   useEffect(() => {
     if (albumId && !isLoading) {
@@ -26,7 +30,7 @@ const Album = ({ albumId }) => {
     let data = await fetcher(`/self/album/${albumId}`);
     setAlbumData({ ...data });
     const aData = data;
-    var tempIsCreator = isDesktopWindow() && (user?.email == aData?.email);
+    var tempIsCreator = (user?.email == aData?.email);
     isCreator.current = tempIsCreator;
     data = data.frames.sort((a,b) => a.order - b.order);
     setSlideData(tempIsCreator ? data.length > 0 ?
@@ -48,6 +52,58 @@ const Album = ({ albumId }) => {
     ] : data);
     setIsFetching(false);
   };
+
+  const inputRef = useRef(null);
+
+  function onSelectFile(e) {
+    if (e.target.files && e.target.files.length > 0) {
+      const reader = new FileReader();
+      reader.addEventListener("load", () =>
+        // this.setState({ src: reader.result })
+        createNewBlock(reader.result)
+      );
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  }
+
+
+  function handleButtonClick(e) {
+    e.preventDefault();
+    if (!inputRef || !inputRef.current) return;
+
+    inputRef.current.click();
+  }
+
+  const createNewBlock = (img_src) => {
+    // console.log('createNewBlock', img_src);
+    setBlocks((prev) => [
+      ...prev,
+      { id: Date.now(), x: 0, y: 0, w: 1, h: 1, p_img: img_src },
+    ]);
+  }
+
+  const searchAndUpdateBlock = (block) => {
+    setBlocks((state) => {
+      return state.map((b) => {
+        if (b.id === block.id) {
+          return {
+            ...block,
+            p_img: block.p_img,
+          };
+        }
+        return b;
+      });
+    });
+    // const newBlocks = state.blocks.map(block => {
+    //   if (block.id === state.cropBlock.id) {
+    //     return {
+    //       ...block,
+    //       p_img: croppedImageUrl
+    //     }
+    //   }
+    //   return block;
+    // })
+  }
 
   return (
     <>
@@ -89,34 +145,19 @@ const Album = ({ albumId }) => {
           }
         `}
       </style>
-      <div className="parent">
+      <div className="parent h-screen">
         <Navbar />
-        <div className='work-space relative'>
-          {isCreator.current && (
-            <div className='note absolute'>
-              <h3>Story lives a lifetime only if you share!</h3>
-              <div className='text-14 mb-16'> Use the bottom link to Get people talking about your story </div>
-              <CopyToClipboard />
-            </div>
-          )}
-          {/* <div className='album-title' contentEditable={true}>Sunday Mass</div> */}
-          {slideData.length > 0 && slideData.map((el, index) => (
-            <ElementEditor
-              albumId={albumId}
-              data={el}
-              key={el.id}
-              setSlideData={setSlideData}
-              order={index}
-              veryFirst={index === (slideData.length - 2)}
-              isPrevSaved={Boolean(slideData[index-1]?.url || slideData[index-1]?.content)}
-              isCreator={isCreator.current}
-            />
-          ))}
-          {isFetching && (
+        <div className='h-screen overflow-scroll relative'>
+          <BlocksEditor blocks={blocks} searchAndUpdateBlock={searchAndUpdateBlock} />
+          {/* {isFetching && (
             <div className='loader-container'>
               <Loader />
             </div>
-          )}
+          )} */}
+          <div className="fixed bottom-0 left-0 w-full p-2">
+            <button onClick={handleButtonClick} className='w-full bg-gray-300 shadow py-2'>Upload File</button>
+            <input ref={inputRef} type='file' hidden onChange={onSelectFile} />
+          </div>
         </div>
       </div>
     </>

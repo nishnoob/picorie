@@ -130,7 +130,7 @@ export default class ElementEditor extends React.Component {
         </style>
         <div className="wrapper">
           {/* {elementData.type !== null && <div className="order-str"><sup>#</sup>{orderStr}</div>} */}
-          {this.props.data.type === null ? (
+          {/* {this.props.data.type === null ? (
             <StructureSelect
               data={this.props.data}
               order={this.props.order}
@@ -140,7 +140,7 @@ export default class ElementEditor extends React.Component {
             />
           ) : (
             this.renderElement()
-          )}
+          )} */}
         </div>
       </>
     );

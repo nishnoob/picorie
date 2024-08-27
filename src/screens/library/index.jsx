@@ -200,9 +200,15 @@ const Library = () => {
           ) : albums ? (
             <>
               {/* Tiles */}
-              {isDesktopWindow() && (
+              { (
                 <div className='card-row d-flex'>
-                  {alb1.length > 0 && alb1.map((el, index) => (
+                  <div className="add-album-card d-flex-col justify-center" onClick={() => setCreate(true)}>
+                    <div>
+                      <div className='text-center text-24'>+</div>
+                      <div className='text-center text-14'>new album</div>
+                    </div>
+                  </div>
+                  {albums.length > 0 && albums.map((el, index) => (
                     <Link key={el.id} href={`/album/${el.id}`}>
                       <div className="album-card relative d-flex-col justify-center align-center">
                         <div className='clipper'>
@@ -217,18 +223,10 @@ const Library = () => {
                       </div>
                     </Link>
                   ))}
-                  {alb1.length < 3 && (
-                    <div className="add-album-card d-flex-col justify-center" onClick={() => setCreate(true)}>
-                      <div>
-                        <div className='text-center text-24'>+</div>
-                        <div className='text-center text-14'>new album</div>
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
               {/* List */}
-              {alb1.length >= 3 && isDesktopWindow() && (
+              {/* {alb1.length >= 3 && isDesktopWindow() && (
                 <div className='album-title-col d-flex-col'>
                   <div className='album-title-text' onClick={() => setCreate(true)}>+ new album</div>
                   {alb2.map(el => (
@@ -244,7 +242,7 @@ const Library = () => {
                     </Link>
                   ))}
                 </div>
-              )}
+              )} */}
             </>
           ) : (
             <div className='album-title-col'>

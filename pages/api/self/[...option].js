@@ -44,7 +44,7 @@ export default async (req, res) => {
       res.status(200).json(data);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ msg: "Something went wrong! 😕" });
+      res.status(500).json({ msg: error });
     }
   } else if (option?.[0].indexOf("album") >= 0) {
     try {

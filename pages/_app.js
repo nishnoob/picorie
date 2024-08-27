@@ -3,6 +3,10 @@ import { UserProvider } from '@auth0/nextjs-auth0';
 import { Toaster } from 'react-hot-toast';
 
 import '../public/global.css';
+import '/node_modules/react-grid-layout/css/styles.css';
+import '/node_modules/react-resizable/css/styles.css';
+
+
 import Airtable from 'airtable';
 import Head from 'next/head';
 

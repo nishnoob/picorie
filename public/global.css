@@ -1,5 +1,9 @@
 
 /* INIT */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --primary-color: #be9500;
 }
