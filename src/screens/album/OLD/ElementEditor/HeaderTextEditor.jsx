@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import ContentEditable from "react-contenteditable";
 import { toast } from "react-hot-toast";
-import fetcher from "../../../utils/fetcher";
+import fetcher from "../../../../utils/fetcher";
 
 export const HeaderTextEditor = ({
   albumId,
