@@ -5,30 +5,6 @@ import { useUser } from '@auth0/nextjs-auth0';
 import { BentoEditor } from './BentoEditor';
 import { LoaderIcon } from 'react-hot-toast';
 
-const dummyData = [
-  {
-    id: 1,
-    x: 0,
-    y: 0,
-    h: 1,
-    w: 1,
-  },
-  {
-    id: 2,
-    x: 1,
-    y: 0,
-    h: 2,
-    w: 1,
-  },
-  {
-    id: 3,
-    x: 0,
-    y: 2,
-    w: 2,
-    h: 0.5,
-  }
-];
-
 export interface Block {
   i: string;
   x: number;
@@ -64,20 +40,6 @@ const Album = ({ albumId }: { albumId: string }) => {
     setIsFetching(false);
   };
 
-  const searchAndUpdateBlock = (block: Block) => {
-    setBlocks((state) => {
-      return state.map((b) => {
-        if (b.i === block.i) {
-          return {
-            ...block,
-            p_img: block.p_img,
-          };
-        }
-        return b;
-      });
-    });
-  }
-
   return (
     <div className="parent h-screen">
       <Navbar />
@@ -92,7 +54,6 @@ const Album = ({ albumId }: { albumId: string }) => {
         <BentoEditor
           blocks={blocks}
           setBlocks={setBlocks}
-          searchAndUpdateBlock={searchAndUpdateBlock}
         />
       )}
     </div>
