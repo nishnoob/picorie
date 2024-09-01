@@ -22,6 +22,7 @@ const AddButton = ({ setBlocks }: Props) => {
         // this.setState({ src: reader.result })
         if (reader.result && typeof reader.result === 'string') {
           createNewBlock(reader.result)
+          inputElement.value = null;
         }
       });
       reader.readAsDataURL(inputElement.files[0]);
