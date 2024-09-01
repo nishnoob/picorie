@@ -1,5 +1,4 @@
-
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import GridLayout, { Layout, WidthProvider } from "react-grid-layout";
 import AddButton from "./AddButton";
 import { Block } from "..";
@@ -8,11 +7,14 @@ import CropModule from "./CropModule";
 const ResponsiveGridLayout = WidthProvider(GridLayout);
 
 interface Props {
+  albumId: string;
   blocks: Block[];
   setBlocks: Dispatch<SetStateAction<Block[]>>;
+  isCreator: boolean;
 }
 
-const BentoEditor = ({ blocks, setBlocks }: Props) => {
+const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
+  const savedBlocks = useRef<Block[]>([]);
   const [cropBlock, setCropBlock] = React.useState<Block>({
     i: "",
     x: 0,
@@ -21,18 +23,38 @@ const BentoEditor = ({ blocks, setBlocks }: Props) => {
     h: 1,
     p_img: ""
   });
+  const [unsavedChanges, setUnsavedChanges] = React.useState<boolean>(false);
 
   const numberOfCols = 2;
 
   const rowHeight = window.innerWidth / numberOfCols - 15;
 
+
+  useEffect(() => {
+    savedBlocks.current = blocks;
+  }, []);
+
   const onSelectCropFile = (block: Block) => {
     setCropBlock(block);
   }
 
+  const hasBlocksChanged = (blocks: Block[]): boolean => {
+    console.log(blocks, savedBlocks.current);
+    return blocks.some((block, index) => {
+      return (
+        (block?.p_img !== savedBlocks.current[index]?.p_img)
+        || (block.x !== savedBlocks.current[index].x)
+        || (block.y !== savedBlocks.current[index].y)
+        || (block.w !== savedBlocks.current[index].w)
+        || (block.h !== savedBlocks.current[index].h)
+      );
+    });
+  }
+
   const handleLayoutChange = (layout: Layout[]): void => {
+    let blocksArray = [];
     setBlocks(state => {
-      return layout.map((block, index) => {
+      blocksArray = layout.map((block, index) => {
         return {
           ...state[index],
           x: block.x,
@@ -41,11 +63,15 @@ const BentoEditor = ({ blocks, setBlocks }: Props) => {
           h: block.h
         };
       });
+      return blocksArray;
     });
+    if (hasBlocksChanged(blocksArray)) {
+      setUnsavedChanges(true);
+    }
   };
 
   return (
-    <div className='h-screen overflow-scroll relative'>
+    <div className='flex-1 overflow-scroll relative bg-neutral-200'>
       <div className="w-screen">
         <ResponsiveGridLayout
           className="layout "
@@ -54,24 +80,34 @@ const BentoEditor = ({ blocks, setBlocks }: Props) => {
           draggableCancel="#crop-button"
           rowHeight={rowHeight - 5}
           onLayoutChange={handleLayoutChange}
+          isDraggable={isCreator}
+          isResizable={isCreator}
         >
           {blocks.map((block, index) => (
-            <div key={block.i} data-grid={blocks[index]} className="border-2 border-gray-400 rounded overflow-clip relative">
+            <div key={block.i} data-grid={blocks[index]} className="border border-gray-300 drop-shadow-sm rounded overflow-clip relative">
               {block.p_img && (<img src={block.p_img} alt="img" />)}
-              <div
-                id="crop-button"
-                className="cancelSelectorName absolute top-1 right-1 border rounded-full bg-white p-1"
-                // onTouchEnd={(e) => e.stopPropagation()}
-                onClick={(e) => { e.stopPropagation(); onSelectCropFile(block); }}
-              >
-                <CropIcons />
-                {/* <i className="fa-solid fa-crop"></i> */}
-              </div>
+              {isCreator && (
+                <div
+                  id="crop-button"
+                  className="cancelSelectorName absolute top-1 right-1 border rounded-full bg-white p-1"
+                  onClick={(e) => { e.stopPropagation(); onSelectCropFile(block); }}
+                >
+                  <CropIcons />
+                  {/* <i className="fa-solid fa-crop"></i> */}
+                </div>
+              )}
             </div>
           ))}
         </ResponsiveGridLayout>
       </div>
-      <AddButton setBlocks={setBlocks} />
+      {isCreator && (
+        <AddButton
+          albumId={albumId}
+          setBlocks={setBlocks}
+          unsavedChanges={unsavedChanges}
+          savedBlocks={savedBlocks}
+        />
+      )}
       {cropBlock.p_img && (
         <CropModule
           block={cropBlock}

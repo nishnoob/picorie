@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { use, useEffect, useRef, useState } from 'react';
 import fetcher from '../../utils/fetcher';
 import Navbar from '../../components/Navbar';
 import { useUser } from '@auth0/nextjs-auth0';
@@ -19,7 +19,6 @@ const Album = ({ albumId }: { albumId: string }) => {
   const { user, isLoading } = useUser();
 
   const [isFetching, setIsFetching] = useState(true);
-  const [albumData, setAlbumData] = useState({ id: albumId });
   const [blocks, setBlocks] = useState<Block[]>([]);
   
   const isCreator = useRef(false);
@@ -34,14 +33,22 @@ const Album = ({ albumId }: { albumId: string }) => {
     setIsFetching(true);
     let data = await fetcher(`/self/album/${albumId}`);
     if (data) {
-      setAlbumData({ ...data });
+      const blocksArray = data?.frames.map(frame => ({
+        i: frame.id,
+        x: frame.x,
+        y: frame.y,
+        w: frame.w,
+        h: frame.h,
+        p_img: frame.url,
+      }));
+      setBlocks(blocksArray);
       isCreator.current = user?.email == data?.email;
     }
     setIsFetching(false);
   };
 
   return (
-    <div className="parent h-screen">
+    <div className="parent h-screen flex flex-col">
       <Navbar />
       {isFetching ? (
         <div className='loader-container flex-col'>
@@ -52,8 +59,10 @@ const Album = ({ albumId }: { albumId: string }) => {
         </div>
       ) : (
         <BentoEditor
+          albumId={albumId}
           blocks={blocks}
           setBlocks={setBlocks}
+          isCreator={isCreator.current}
         />
       )}
     </div>

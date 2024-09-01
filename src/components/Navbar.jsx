@@ -11,13 +11,11 @@ const Navbar = () => {
       <style jsx>
         {`
           header {
-            padding: 20px 48px;
             display: flex;
             justify-content: space-between;
             background: black;
           }
           header .title {
-            letter-spacing: 8px;
             font-size: 18px;
             color: var(--primary-color);
             padding: 2px 0px 6px 6px;
@@ -26,15 +24,17 @@ const Navbar = () => {
             border-color: white;
             background: transparent;
             color: white;
+            font-size: 10px;
+            border-style: dashed;
           }
         `}
       </style>
       <>
-        <header className='align-center relative'>
+        <header className='px-4 py-3 align-center relative drop-shadow-md'>
           <div className='title'>picorie</div>
-          <div className='text-14 text-white'>{
+          <div className='text-[10px] text-slate-400'>{
             user?.email || (
-            <button className='minimal-btn' onClick={() => router.push('/')}>Login</button>
+            <button className='minimal-btn text-[10px]' onClick={() => router.push('/')}>Login</button>
           )}</div>
         </header>
         {/* {share && (

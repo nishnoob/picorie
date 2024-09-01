@@ -135,7 +135,6 @@ const CropModule = ({ block, setCropBlock, rowHeight, setBlocks }: Props) => {
       <div className="pt-8 flex flex-col items-center h-screen">
         <h2 className="text-2xl font-bold text-white">Crop Image</h2>
         <div className="flex-1 w-full flex items-center">
-          
           <ReactCrop
             crop={crop}
             ruleOfThirds
