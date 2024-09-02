@@ -71,7 +71,7 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
   };
 
   return (
-    <div className='flex-1 overflow-scroll relative bg-neutral-200'>
+    <div className=' relative'>
       <div className="w-screen">
         <ResponsiveGridLayout
           className="layout "
@@ -106,6 +106,7 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
           setBlocks={setBlocks}
           unsavedChanges={unsavedChanges}
           savedBlocks={savedBlocks}
+          blocks={blocks}
         />
       )}
       {cropBlock.p_img && (

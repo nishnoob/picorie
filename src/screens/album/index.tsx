@@ -48,8 +48,8 @@ const Album = ({ albumId }: { albumId: string }) => {
   };
 
   return (
-    <div className="parent h-screen flex flex-col">
-      <Navbar />
+    <div className="flex flex-col">
+      {/* <Navbar /> */}
       {isFetching ? (
         <div className='loader-container flex-col'>
           <LoaderIcon className="h-18 text-[72px] w-18" />

@@ -106,6 +106,33 @@ export default async (req, res) => {
     }
   } else if (
     option?.[0].indexOf("photo") >= 0 &&
+    option?.[1].indexOf("update") >= 0
+   ) {
+    try {
+      console.log(option?.[2], req.body);
+      Airtable
+        .base('appbo8nzfBdKwOEoo')('photos')
+        .update([
+          {
+            id: option?.[2],
+            fields: {
+              ...req.body,
+            },
+          }
+        ], (err, records) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          data = records.map(el => el.fields)
+          res.status(200).json(data);
+        });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ msg: "Something went wrong! 😕" });
+    }
+  } else if (
+    option?.[0].indexOf("photo") >= 0 &&
     option?.[1].indexOf("delete") >= 0
    ) {
     try {

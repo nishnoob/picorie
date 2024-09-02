@@ -10,11 +10,6 @@ const Navbar = () => {
     <>
       <style jsx>
         {`
-          header {
-            display: flex;
-            justify-content: space-between;
-            background: black;
-          }
           header .title {
             font-size: 18px;
             color: var(--primary-color);
@@ -30,7 +25,7 @@ const Navbar = () => {
         `}
       </style>
       <>
-        <header className='px-4 py-3 align-center relative drop-shadow-md'>
+        <header className='px-4 py-3 align-center drop-shadow-md bg-black flex justify-between'>
           <div className='title'>picorie</div>
           <div className='text-[10px] text-slate-400'>{
             user?.email || (

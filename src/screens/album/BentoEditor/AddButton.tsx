@@ -8,9 +8,10 @@ type Props = {
   setBlocks: Dispatch<SetStateAction<Block[]>>;
   unsavedChanges: boolean;
   savedBlocks: MutableRefObject<Block[]>;
+  blocks: Block[];
 }
 
-const AddButton = ({ albumId, setBlocks, unsavedChanges, savedBlocks }: Props) => {
+const AddButton = ({ albumId, setBlocks, unsavedChanges, savedBlocks, blocks }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleCreateButton(e: React.MouseEvent) {
@@ -67,9 +68,27 @@ const AddButton = ({ albumId, setBlocks, unsavedChanges, savedBlocks }: Props) =
   }
 
   const updateAllImagesPosition = async () => {
-    // for (let i = 0; i < savedBlocks.current.length; i++) {
-    //   const block = savedBlocks.current[i];
-    //   if (block.p_img.includes('https
+    let blocksArray = [];
+    const updateFetchesArray = [];
+    savedBlocks.current.map((block, index) => {
+      // TODO: too many fetches
+      updateFetchesArray.push(
+        fetcher(
+          `/self/photo/update/${block.i}`,
+          {
+            method: 'POST',
+            body: {
+              url: block.p_img,
+              x: blocks[index].x,
+              y: blocks[index].y,
+              w: blocks[index].w,
+              h: blocks[index].h
+            }
+          }
+        )
+      );
+    });
+    await Promise.all(updateFetchesArray);
   }
 
   return (

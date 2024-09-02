@@ -13,22 +13,21 @@ const HomeScreen = () => {
             height: 100vh;
           }
           .title {
-            letter-spacing: 8px;
             font-size: 48px;
             color: var(--primary-color);
             margin-bottom: 24px;
           }
         `}
       </style>
-      <div className='wrapper d-flex-col align-center justify-center'>
+      <div className='h-screen w-screen flex flex-col justify-center items-center bg-black fixed'>
         <div className='title'>picorie</div>
-        <div
-          className='minimal-btn'
+        <button
+          className='border px-4 border-white text-white'
           onClick={() => router.push('/api/auth/login')}
           // href="/api/auth/login"
         >
           login
-        </div>
+        </button>
       </div>
     </>
   );
