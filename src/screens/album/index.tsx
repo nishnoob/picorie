@@ -40,6 +40,8 @@ const Album = ({ albumId }: { albumId: string }) => {
         w: frame.w,
         h: frame.h,
         p_img: frame.url,
+        maxW: 2,
+        maxH: 2,
       }));
       setBlocks(blocksArray);
       isCreator.current = user?.email == data?.email;

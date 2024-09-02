@@ -1,4 +1,4 @@
-import { Dispatch, MutableRefObject, SetStateAction, useRef } from "react";
+import { Dispatch, MutableRefObject, SetStateAction, useRef, useState } from "react";
 import { Block } from "..";
 import { UploadImageToS3 } from "../imgeUpload";
 import fetcher from "../../../utils/fetcher";
@@ -9,9 +9,11 @@ type Props = {
   unsavedChanges: boolean;
   savedBlocks: MutableRefObject<Block[]>;
   blocks: Block[];
+  setIsEditable: Dispatch<SetStateAction<boolean>>;
+  isEditable: boolean;
 }
 
-const AddButton = ({ albumId, setBlocks, unsavedChanges, savedBlocks, blocks }: Props) => {
+const AddButton = ({ albumId, setBlocks, unsavedChanges, savedBlocks, blocks, setIsEditable, isEditable }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleCreateButton(e: React.MouseEvent) {
@@ -67,10 +69,24 @@ const AddButton = ({ albumId, setBlocks, unsavedChanges, savedBlocks, blocks }: 
     }
   }
 
+  const returnChangedBlocks = (): Block[] => {
+    // compare savedBlocks and blocks
+    const blocksToUpdate:Block[] = [];
+    savedBlocks.current.forEach(el => {
+      const stateBlock = blocks.find(block => block.i === el.i);
+      if (stateBlock.i) {
+        if (JSON.stringify(el) !== JSON.stringify(stateBlock)) {
+          blocksToUpdate.push(stateBlock);
+        }
+      }
+    });
+    return blocksToUpdate;
+  };
+
   const updateAllImagesPosition = async () => {
-    let blocksArray = [];
     const updateFetchesArray = [];
-    savedBlocks.current.map((block, index) => {
+    const blocksToUpdate = returnChangedBlocks();
+    blocksToUpdate.map((block, index) => {
       // TODO: too many fetches
       updateFetchesArray.push(
         fetcher(
@@ -79,16 +95,20 @@ const AddButton = ({ albumId, setBlocks, unsavedChanges, savedBlocks, blocks }: 
             method: 'POST',
             body: {
               url: block.p_img,
-              x: blocks[index].x,
-              y: blocks[index].y,
-              w: blocks[index].w,
-              h: blocks[index].h
+              x: block.x,
+              y: block.y,
+              w: block.w,
+              h: block.h
             }
           }
         )
       );
     });
     await Promise.all(updateFetchesArray);
+  }
+
+  const handleEditable = (checked: boolean) => {
+    setIsEditable(checked);
   }
 
   return (
@@ -101,6 +121,30 @@ const AddButton = ({ albumId, setBlocks, unsavedChanges, savedBlocks, blocks }: 
         <div>
           {unsavedChanges && <button onClick={updateAllImagesPosition} className='text-sm bg-black text-white px-4 py-1 border-[3px]  border-black font-bold'>save</button>}
         </div>
+        <div>
+          <ToggleSwitch isChecked={isEditable} onUpdate={handleEditable} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ToggleSwitch = ({isChecked, onUpdate}) => {
+  const [checked, setChecked] = useState<boolean>(isChecked);
+  return (
+    <div className="inline-flex items-center">
+      <div className="relative inline-block w-8 h-4 rounded-full cursor-pointer">
+        <input id="switch-component" type="checkbox"
+          className="absolute w-8 h-4 transition-colors duration-300 rounded-full appearance-none cursor-pointer peer bg-blue-gray-100 checked:bg-gray-900 peer-checked:border-gray-900 peer-checked:before:bg-gray-900"
+          defaultChecked
+          checked={checked}
+          onChange={(e) => {setChecked(e.target.checked); onUpdate(e.target.checked);}}
+        />
+        <label htmlFor="switch-component"
+          className="before:content[''] absolute top-2/4 -left-1 h-5 w-5 -translate-y-2/4 cursor-pointer rounded-full border border-blue-gray-100 bg-white shadow-md transition-all duration-300 before:absolute before:top-2/4 before:left-2/4 before:block before:h-10 before:w-10 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity hover:before:opacity-10 peer-checked:translate-x-full peer-checked:border-gray-900 peer-checked:before:bg-gray-900">
+          <div className="inline-block p-5 rounded-full top-2/4 left-2/4 -translate-x-2/4 -translate-y-2/4"
+            data-ripple-dark="true"></div>
+        </label>
       </div>
     </div>
   );

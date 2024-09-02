@@ -24,11 +24,10 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
     p_img: ""
   });
   const [unsavedChanges, setUnsavedChanges] = React.useState<boolean>(false);
-
+  const [isEditable, setIsEditable] = React.useState<boolean>(false);
   const numberOfCols = 2;
 
   const rowHeight = window.innerWidth / numberOfCols - 15;
-
 
   useEffect(() => {
     savedBlocks.current = blocks;
@@ -73,32 +72,41 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
   return (
     <div className=' relative'>
       <div className="w-screen">
-        <ResponsiveGridLayout
-          className="layout "
-          layout={blocks}
-          cols={2}
-          draggableCancel="#crop-button"
-          rowHeight={rowHeight - 5}
-          onLayoutChange={handleLayoutChange}
-          isDraggable={isCreator}
-          isResizable={isCreator}
-        >
-          {blocks.map((block, index) => (
-            <div key={block.i} data-grid={blocks[index]} className="border border-gray-300 drop-shadow-sm rounded overflow-clip relative">
-              {block.p_img && (<img src={block.p_img} alt="img" />)}
-              {isCreator && (
-                <div
-                  id="crop-button"
-                  className="cancelSelectorName absolute top-1 right-1 border rounded-full bg-white p-1"
-                  onClick={(e) => { e.stopPropagation(); onSelectCropFile(block); }}
-                >
-                  <CropIcons />
-                  {/* <i className="fa-solid fa-crop"></i> */}
-                </div>
-              )}
-            </div>
-          ))}
-        </ResponsiveGridLayout>
+        {isCreator && isEditable ? (
+          <ResponsiveGridLayout
+            className="layout "
+            layout={blocks}
+            cols={2}
+            draggableCancel="#crop-button"
+            rowHeight={rowHeight - 5}
+            onLayoutChange={handleLayoutChange}
+            useCSSTransforms={true}
+          >
+            {blocks.map((block, index) => (
+              <div key={block.i} data-grid={blocks[index]} className="border border-gray-300 drop-shadow-sm rounded overflow-clip relative">
+                {block.p_img && (<img src={block.p_img} alt="img" />)}
+                {isCreator && (
+                  <div
+                    id="crop-button"
+                    className="cancelSelectorName absolute top-1 right-1 border rounded-full bg-white p-1"
+                    onClick={(e) => { e.stopPropagation(); onSelectCropFile(block); }}
+                  >
+                    <CropIcons />
+                    {/* <i className="fa-solid fa-crop"></i> */}
+                  </div>
+                )}
+              </div>
+            ))}
+          </ResponsiveGridLayout>
+        ) : (
+          <div className="grid grid-cols-2 gap-1 p-2">
+            {blocks.map((block, index) => (
+              <div key={block.i} className="border border-gray-300 drop-shadow-sm rounded overflow-clip relative">
+                {block.p_img && (<img src={block.p_img} alt="img" />)}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
       {isCreator && (
         <AddButton
@@ -107,6 +115,8 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
           unsavedChanges={unsavedChanges}
           savedBlocks={savedBlocks}
           blocks={blocks}
+          setIsEditable={setIsEditable}
+          isEditable={isEditable}
         />
       )}
       {cropBlock.p_img && (
