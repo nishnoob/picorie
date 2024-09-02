@@ -11,8 +11,8 @@ import Airtable from 'airtable';
 import Head from 'next/head';
 
 export default function App({ Component, pageProps }) {
-  // Airtable.configure({ apiKey: process.env.AUTH0_CLIENT_ID });
-  Airtable.configure({ apiKey: 'keyliL9lqi7Rgn8MT' });
+  Airtable.configure({ apiKey: process.env.AUTH0_CLIENT_ID });
+  // Airtable.configure({ apiKey: 'patKLm9Zh8kN15dRU.b803513acd7fc562130a957ea11c5b1e71ad2918a2aabca7505392256975675b' });
   //TODO: MAKE RESPONSIVE
   return (
     <>
