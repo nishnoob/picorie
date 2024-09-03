@@ -12,6 +12,10 @@ export interface Block {
   w: number;
   h: number;
   p_img: string;
+  crop_x?: number;
+  crop_y?: number;
+  crop_w?: number;
+  crop_h?: number;
 }
 
 const Album = ({ albumId }: { albumId: string }) => {
@@ -42,6 +46,10 @@ const Album = ({ albumId }: { albumId: string }) => {
         p_img: frame.url,
         maxW: 2,
         maxH: 2,
+        crop_x: frame.crop_x,
+        crop_y: frame.crop_y,
+        crop_w: frame.crop_w,
+        crop_h: frame.crop_h,
       }));
       setBlocks(blocksArray);
       isCreator.current = user?.email == data?.email;

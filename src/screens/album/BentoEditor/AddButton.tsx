@@ -136,7 +136,6 @@ const ToggleSwitch = ({isChecked, onUpdate}) => {
       <div className="relative inline-block w-8 h-4 rounded-full cursor-pointer">
         <input id="switch-component" type="checkbox"
           className="absolute w-8 h-4 transition-colors duration-300 rounded-full appearance-none cursor-pointer peer bg-blue-gray-100 checked:bg-gray-900 peer-checked:border-gray-900 peer-checked:before:bg-gray-900"
-          defaultChecked
           checked={checked}
           onChange={(e) => {setChecked(e.target.checked); onUpdate(e.target.checked);}}
         />

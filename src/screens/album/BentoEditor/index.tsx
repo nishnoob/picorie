@@ -3,6 +3,7 @@ import GridLayout, { Layout, WidthProvider } from "react-grid-layout";
 import AddButton from "./AddButton";
 import { Block } from "..";
 import CropModule from "./CropModule";
+import CropPreview from "./CropPreview";
 
 const ResponsiveGridLayout = WidthProvider(GridLayout);
 
@@ -72,41 +73,58 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
   return (
     <div className=' relative'>
       <div className="w-screen">
-        {isCreator && isEditable ? (
-          <ResponsiveGridLayout
-            className="layout "
-            layout={blocks}
-            cols={2}
-            draggableCancel="#crop-button"
-            rowHeight={rowHeight - 5}
-            onLayoutChange={handleLayoutChange}
-            useCSSTransforms={true}
-          >
-            {blocks.map((block, index) => (
-              <div key={block.i} data-grid={blocks[index]} className="border border-gray-300 drop-shadow-sm rounded overflow-clip relative">
-                {block.p_img && (<img src={block.p_img} alt="img" />)}
-                {isCreator && (
-                  <div
-                    id="crop-button"
-                    className="cancelSelectorName absolute top-1 right-1 border rounded-full bg-white p-1"
-                    onClick={(e) => { e.stopPropagation(); onSelectCropFile(block); }}
-                  >
-                    <CropIcons />
-                    {/* <i className="fa-solid fa-crop"></i> */}
-                  </div>
-                )}
-              </div>
-            ))}
-          </ResponsiveGridLayout>
-        ) : (
-          <div className="grid grid-cols-2 gap-1 p-2">
-            {blocks.map((block, index) => (
-              <div key={block.i} className="border border-gray-300 drop-shadow-sm rounded overflow-clip relative">
-                {block.p_img && (<img src={block.p_img} alt="img" />)}
-              </div>
-            ))}
-          </div>
-        )}
+        <ResponsiveGridLayout
+          className="layout "
+          layout={blocks}
+          cols={2}
+          draggableCancel="#crop-button"
+          rowHeight={rowHeight - 5}
+          onLayoutChange={handleLayoutChange}
+          useCSSTransforms={true}
+          isResizable={isCreator && isEditable}
+          isDraggable={isCreator && isEditable}
+        >
+          {blocks.map((block, index) => (
+            <div key={block.i} data-grid={blocks[index]} className="border border-gray-300 drop-shadow-sm rounded overflow-clip relative">
+              {block.p_img && (
+                <>
+                  <img
+                    src={block.p_img}
+                    alt="img"
+                    className="absolute top-0 left-0 w-full h-full object-cover opacity-0"
+                    id={`img-${block.i}`}
+                    // width={"100%"}
+                    // height={"100%"}
+                    // style={{ objectFit: "cover", clipPath: `polygon(${block.crop_x}px ${block.crop_y}px, ${block.crop_x + block.crop_w}px ${block.crop_y}px, ${block.crop_x + block.crop_w}px ${block.crop_y + block.crop_h}px, ${block.crop_x}px ${block.crop_y + block.crop_h}px)`, }}
+                    // className={`clip-path: polygon(${block.crop_x}px ${block.crop_y}px, ${block.crop_x + block.crop_w}px ${block.crop_y}px, ${block.crop_x + block.crop_w}px ${block.crop_y + block.crop_h}px, ${block.crop_x}px ${block.crop_y + block.crop_h}px);`}
+                  />
+                  <CropPreview
+                    img={block.p_img}
+                    rowHeight={rowHeight}
+                    crop={{
+                      unit: "px",
+                      x: block.crop_x || 0,
+                      y: block.crop_y || 0,
+                      width: block.crop_w || rowHeight,
+                      height: block.crop_h || rowHeight,
+                    }}
+                  />
+                </>
+              )}
+              {/* {block.p_img && (<img style={{ clip: `rect(${block.crop_x}px ${block.crop_y}, ${block.crop_x + block.crop_w}px ${block.crop_y}, ${block.crop_x + block.crop_w}px ${block.crop_y + block.crop_h}px, ${block.crop_x} ${block.crop_y + block.crop_h}px)`, }} src={block.p_img} alt="img" />)} */}
+              {isCreator && (
+                <div
+                  id="crop-button"
+                  className="cancelSelectorName absolute top-1 right-1 border rounded-full bg-white p-1"
+                  onClick={(e) => { e.stopPropagation(); onSelectCropFile(block); }}
+                >
+                  <CropIcons />
+                  {/* <i className="fa-solid fa-crop"></i> */}
+                </div>
+              )}
+            </div>
+          ))}
+        </ResponsiveGridLayout>
       </div>
       {isCreator && (
         <AddButton

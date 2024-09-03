@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { Block } from "..";
 import ReactCrop, { Crop } from "react-image-crop";
 import 'react-image-crop/dist/ReactCrop.css'
+import fetcher from "../../../utils/fetcher";
 
 type Props = {
   block: Block;
@@ -13,8 +14,8 @@ type Props = {
 const CropModule = ({ block, setCropBlock, rowHeight, setBlocks }: Props) => {
   const [crop, setCrop] = useState<Crop>({
     unit: "px",
-    x: block.x,
-    y: block.y,
+    x: 0,
+    y: 0,
     width: block.w * rowHeight,
     height: block.h * rowHeight + 5,
   });
@@ -48,18 +49,17 @@ const CropModule = ({ block, setCropBlock, rowHeight, setBlocks }: Props) => {
 
   const makeClientCrop = async () => {
     if (imageRef.current && crop.width && crop.height) {
-      const croppedImageUrl = await getCroppedImg(
-        imageRef.current,
-        crop,
-        "newFile.jpeg"
-      );
-      if (!croppedImageUrl) {
-        return;
-      }
+      // const croppedImageUrl = await getCroppedImg(
+      //   imageRef.current,
+      //   crop,
+      //   "newFile.jpeg"
+      // );
+      // if (!croppedImageUrl) {
+      //   return;
+      // }
       setCropBlock((state: Block) => {
         searchAndUpdateBlock({
-          ...state,
-          p_img: croppedImageUrl
+          ...state
         } as Block);
         return({
           i: "",
@@ -120,19 +120,45 @@ const CropModule = ({ block, setCropBlock, rowHeight, setBlocks }: Props) => {
     setBlocks((state) => {
       return state.map((b) => {
         if (b.i === block.i) {
-          return {
+          const arr = {
             ...block,
             p_img: block.p_img,
+            crop_x: crop.x,
+            crop_y: crop.y,
+            crop_w: crop.width,
+            crop_h: crop.height
           };
+          updateAndSaveToBE();
+          return arr;
         }
         return b;
       });
     });
   }
 
+  const updateAndSaveToBE = () => {
+    fetcher(
+      `/self/photo/update/${block.i}`,
+      {
+        method: 'POST',
+        body: {
+          url: block.p_img,
+          x: block.x,
+          y: block.y,
+          w: block.w,
+          h: block.h,
+          crop_x: crop.x,
+          crop_y: crop.y,
+          crop_w: crop.width,
+          crop_h: crop.height
+        }
+      }
+    )
+  };
+
   return (
     <div className="fixed top-0 right-0 bottom-0 left-0 bg-black/80 flex justify-center items-start">
-      <div className="pt-8 flex flex-col items-center h-screen">
+      <div className="pt-8 flex flex-col items-center h-full">
         <h2 className="text-2xl font-bold text-white">Crop Image</h2>
         <div className="flex-1 w-full flex items-center">
           <ReactCrop
