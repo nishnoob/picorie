@@ -10,7 +10,6 @@ export async function canvasPreview(
   rotate = 0,
   rowHeight: number,
 ) {
-  console.log(crop)
   const ctx = canvas.getContext('2d')
 
   if (!ctx) {

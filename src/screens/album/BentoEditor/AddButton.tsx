@@ -4,16 +4,22 @@ import { UploadImageToS3 } from "../imgeUpload";
 import fetcher from "../../../utils/fetcher";
 
 type Props = {
-  albumId: string;
-  setBlocks: Dispatch<SetStateAction<Block[]>>;
   unsavedChanges: boolean;
   savedBlocks: MutableRefObject<Block[]>;
   blocks: Block[];
   setIsEditable: Dispatch<SetStateAction<boolean>>;
   isEditable: boolean;
+  setCropBlock: Dispatch<SetStateAction<Block>>;
 }
 
-const AddButton = ({ albumId, setBlocks, unsavedChanges, savedBlocks, blocks, setIsEditable, isEditable }: Props) => {
+const AddButton = ({
+  unsavedChanges,
+  savedBlocks,
+  blocks,
+  setIsEditable,
+  isEditable,
+  setCropBlock
+}: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleCreateButton(e: React.MouseEvent) {
@@ -38,35 +44,24 @@ const AddButton = ({ albumId, setBlocks, unsavedChanges, savedBlocks, blocks, se
   }
 
   const createNewBlock = (img_src: string) => {
-    const epoch = `_uploads_/${Date.now()}.jpeg`;
-    UploadImageToS3(
-      img_src,
-      epoch,
-      () => saveToBE(epoch, img_src),
-    );
+    // const epoch = `_uploads_/${Date.now()}.jpeg`;
+    // UploadImageToS3(
+    //   img_src,
+    //   epoch,
+    //   () => saveToBE(epoch, img_src),
+    // );
+    saveToCropBlock(img_src);
   }
 
-  const saveToBE = async (epoch, img) => {
-    const dataObj = {
-      url: `https://s3.ap-south-1.amazonaws.com/picorie-assets/${epoch}`,
-      album_id: [albumId],
+  const saveToCropBlock = (img_src: string) => {
+    setCropBlock({
+      i: Date.now().toString(),
       x: 0,
       y: 0,
-      h: 1,
       w: 1,
-    };
-    let res = await fetcher('/self/photo/save', { method: 'POST', body: dataObj });
-    if (res?.[0]?.id) {
-      setBlocks((prev) => [
-        ...prev,
-        { i: Date.now().toString(), x: 0, y: 0, w: 1, h: 1, p_img: img },
-      ]);
-      savedBlocks.current = [
-        ...savedBlocks.current,
-        { i: Date.now().toString(), x: 0, y: 0, w: 1, h: 1, p_img: img },
-      ];
-      // toast.success("picture saved!");
-    }
+      h: 1,
+      p_img: img_src,
+    });
   }
 
   const returnChangedBlocks = (): Block[] => {

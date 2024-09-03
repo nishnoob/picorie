@@ -21,6 +21,7 @@ export default async (req, res) => {
         ], (err, records) => {
           if (err) {
             console.error(err);
+            res.status(500).json({ msg: err });
             return;
           }
           data = records.map(el => el.fields)
@@ -95,6 +96,7 @@ export default async (req, res) => {
         ], (err, records) => {
           if (err) {
             console.error(err);
+            res.status(500).json({ msg: err });
             return;
           }
           data = records.map(el => el.fields)
@@ -122,6 +124,7 @@ export default async (req, res) => {
         ], (err, records) => {
           if (err) {
             console.error(err);
+            res.status(500).json({ msg: err });
             return;
           }
           data = records.map(el => el.fields)
@@ -141,6 +144,7 @@ export default async (req, res) => {
         .destroy([option?.[2]], function(err, deletedRecords) {
           if (err) {
             console.error(err);
+            res.status(500).json({ msg: err });
             return;
           }
           // console.log('Deleted', deletedRecords.length, 'records');
@@ -166,6 +170,7 @@ export default async (req, res) => {
         ], (err, records) => {
           if (err) {
             console.error(err);
+            res.status(500).json({ msg: err });
             return;
           }
           data = records.map(el => el.fields)
@@ -185,6 +190,7 @@ export default async (req, res) => {
         .destroy([option?.[2]], function(err, deletedRecords) {
           if (err) {
             console.error(err);
+            res.status(500).json({ msg: err });
             return;
           }
           console.log('Deleted', deletedRecords.length, 'records');

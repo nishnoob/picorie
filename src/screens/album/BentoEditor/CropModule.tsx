@@ -3,15 +3,25 @@ import { Block } from "..";
 import ReactCrop, { Crop } from "react-image-crop";
 import 'react-image-crop/dist/ReactCrop.css'
 import fetcher from "../../../utils/fetcher";
+import { UploadImageToS3 } from "../imgeUpload";
 
 type Props = {
+  albumId: string;
   block: Block;
   setCropBlock: Dispatch<SetStateAction<Block>>;
   rowHeight: number;
   setBlocks: Dispatch<SetStateAction<Block[]>>;
+  savedBlocks: React.MutableRefObject<Block[]>;
 };
 
-const CropModule = ({ block, setCropBlock, rowHeight, setBlocks }: Props) => {
+const CropModule = ({
+  albumId,
+  block,
+  setCropBlock,
+  rowHeight,
+  setBlocks,
+  savedBlocks
+}: Props) => {
   const [crop, setCrop] = useState<Crop>({
     unit: "px",
     x: 0,
@@ -47,6 +57,13 @@ const CropModule = ({ block, setCropBlock, rowHeight, setBlocks }: Props) => {
     });
   };
 
+  const isThisNewBlock = () => {
+    if (savedBlocks.current.find((b) => b.i === block.i)) {
+      return false;
+    }
+    return true;
+  };
+
   const makeClientCrop = async () => {
     if (imageRef.current && crop.width && crop.height) {
       // const croppedImageUrl = await getCroppedImg(
@@ -57,19 +74,75 @@ const CropModule = ({ block, setCropBlock, rowHeight, setBlocks }: Props) => {
       // if (!croppedImageUrl) {
       //   return;
       // }
-      setCropBlock((state: Block) => {
-        searchAndUpdateBlock({
-          ...state
-        } as Block);
-        return({
-          i: "",
-          x: 0,
-          y: 0,
-          w: 1,
-          h: 1,
-          p_img: ""
+      if (isThisNewBlock()) {
+        const epoch = `_uploads_/${Date.now()}.jpeg`;
+        UploadImageToS3(
+          block.p_img,
+          epoch,
+          () => saveNewBlockToBE(epoch, block.p_img),
+        );
+      } else {
+        setCropBlock((state: Block) => {
+          searchAndUpdateBlock({
+            ...state
+          } as Block);
+          return({
+            i: "",
+            x: 0,
+            y: 0,
+            w: 1,
+            h: 1,
+            p_img: ""
+          });
         });
+      }
+    }
+  }
+
+  const saveNewBlockToBE = async (epoch, img) => {
+    const dataObj = {
+      url: `https://s3.ap-south-1.amazonaws.com/picorie-assets/${epoch}`,
+      album_id: [albumId],
+      x: 0,
+      y: 0,
+      h: 1,
+      w: 1,
+      crop_x: crop.x,
+      crop_y: crop.y,
+      crop_w: crop.width,
+      crop_h: crop.height
+    };
+    let res = await fetcher('/self/photo/save', { method: 'POST', body: dataObj });
+    if (res?.[0]?.id) {
+      const newBlockToSave: Block = {
+        i: res[0].id,
+        x: 0,
+        y: 0,
+        w: 1,
+        h: 1,
+        p_img: img,
+        crop_x: crop.x,
+        crop_y: crop.y,
+        crop_w: crop.width,
+        crop_h: crop.height
+      };
+      setBlocks((prev) => [
+        ...prev,
+        newBlockToSave,
+      ]);
+      savedBlocks.current = [
+        ...savedBlocks.current,
+        newBlockToSave,
+      ];
+      setCropBlock({
+        i: "",
+        x: 0,
+        y: 0,
+        w: 1,
+        h: 1,
+        p_img: ""
       });
+      // toast.success("picture saved!");
     }
   }
 

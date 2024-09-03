@@ -31,6 +31,9 @@
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^1.9.2",
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "airtable": "^0.11.5",
     "aws-sdk": "^2.1682.0",
     "compressorjs": "^1.1.1",

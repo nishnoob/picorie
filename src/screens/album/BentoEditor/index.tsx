@@ -4,6 +4,11 @@ import AddButton from "./AddButton";
 import { Block } from "..";
 import CropModule from "./CropModule";
 import CropPreview from "./CropPreview";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { DeleteImageFromS3 } from "../imgeUpload";
+import fetcher from "../../../utils/fetcher";
+import toast from "react-hot-toast";
 
 const ResponsiveGridLayout = WidthProvider(GridLayout);
 
@@ -39,7 +44,6 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
   }
 
   const hasBlocksChanged = (blocks: Block[]): boolean => {
-    console.log(blocks, savedBlocks.current);
     return blocks.some((block, index) => {
       return (
         (block?.p_img !== savedBlocks.current[index]?.p_img)
@@ -70,6 +74,29 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
     }
   };
 
+  const handleDelete = async (block: Block) => {
+    if (confirm("Want to delete?")) {
+      let splitUrl = block.p_img.split('/');
+      const filepath_S3 = `${splitUrl[splitUrl.length - 2]}/${splitUrl[splitUrl.length - 1]}`
+      DeleteImageFromS3(
+        filepath_S3,
+        async () => {
+          let res = await fetcher(`/self/photo/delete/${block.i}`, { method: 'POST' });
+          if (res?.deleted) {
+            setBlocks(state => {
+              const index = state.findIndex(block => block.i === block.i);
+              const newState = [...state];
+              newState.splice(index, 1);
+              return newState;
+            });
+            savedBlocks.current = savedBlocks.current.filter(block => block.i !== cropBlock.i);
+            toast.success("photo deleted!");
+          }
+        },
+      );
+    }
+  }
+
   return (
     <div className=' relative'>
       <div className="w-screen">
@@ -77,7 +104,7 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
           className="layout "
           layout={blocks}
           cols={2}
-          draggableCancel="#crop-button"
+          draggableCancel="#tile-button"
           rowHeight={rowHeight - 5}
           onLayoutChange={handleLayoutChange}
           useCSSTransforms={true}
@@ -89,6 +116,7 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
               {block.p_img && (
                 <>
                   <img
+                  // TODO: do we need this?
                     src={block.p_img}
                     alt="img"
                     className="absolute top-0 left-0 w-full h-full object-cover opacity-0"
@@ -112,14 +140,27 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
                 </>
               )}
               {/* {block.p_img && (<img style={{ clip: `rect(${block.crop_x}px ${block.crop_y}, ${block.crop_x + block.crop_w}px ${block.crop_y}, ${block.crop_x + block.crop_w}px ${block.crop_y + block.crop_h}px, ${block.crop_x} ${block.crop_y + block.crop_h}px)`, }} src={block.p_img} alt="img" />)} */}
-              {isCreator && (
+              {isCreator && isEditable && (
                 <div
-                  id="crop-button"
-                  className="cancelSelectorName absolute top-1 right-1 border rounded-full bg-white p-1"
+                  id="tile-button"
+                  className="absolute top-1 right-1 border rounded-full bg-white p-1"
                   onClick={(e) => { e.stopPropagation(); onSelectCropFile(block); }}
                 >
                   <CropIcons />
                   {/* <i className="fa-solid fa-crop"></i> */}
+                </div>
+              )}
+              {isCreator && isEditable && (
+                <div
+                  id="tile-button"
+                  className="absolute top-1 left-1 border rounded-full bg-white px-2"
+                  onClick={() => handleDelete(block)}
+                >
+                  <FontAwesomeIcon
+                    icon={faTrash}
+                    className="fas fa-check text-xs"
+                    style={{ color: "red" }}
+                  />
                 </div>
               )}
             </div>
@@ -128,21 +169,22 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
       </div>
       {isCreator && (
         <AddButton
-          albumId={albumId}
-          setBlocks={setBlocks}
           unsavedChanges={unsavedChanges}
           savedBlocks={savedBlocks}
           blocks={blocks}
           setIsEditable={setIsEditable}
           isEditable={isEditable}
+          setCropBlock={setCropBlock}
         />
       )}
       {cropBlock.p_img && (
         <CropModule
+          savedBlocks={savedBlocks}
           block={cropBlock}
           setCropBlock={setCropBlock}
           setBlocks={setBlocks}
           rowHeight={rowHeight}
+          albumId={albumId}
         />
       )}
     </div>
