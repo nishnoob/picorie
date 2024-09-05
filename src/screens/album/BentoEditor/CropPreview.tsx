@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { canvasPreview } from './CanvasPreview';
 import { Crop } from 'react-image-crop';
+import { Block } from '..';
 
-export default function CropPreview({ img, crop, rowHeight }: {img: string, crop: Crop, rowHeight: number}) {
+export default function CropPreview({ img, block, crop, rowHeight }: {img: string, block: Block, crop: Crop, rowHeight: number}) {
     const canvasRef = useRef(null);
 
     useEffect(() => {
@@ -21,7 +22,7 @@ export default function CropPreview({ img, crop, rowHeight }: {img: string, crop
             return;
         }
 
-        canvasPreview(image, canvas, crop, scale, rotate, rowHeight);
+        canvasPreview(image, block, canvas, crop, scale, rotate, rowHeight);
     }
 
     const convertURLtoHTMLImageElement = (url: string): Promise<HTMLImageElement> => {

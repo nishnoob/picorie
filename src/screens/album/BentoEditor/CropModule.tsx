@@ -24,10 +24,10 @@ const CropModule = ({
 }: Props) => {
   const [crop, setCrop] = useState<Crop>({
     unit: "px",
-    x: 0,
-    y: 0,
-    width: block.w * rowHeight,
-    height: block.h * rowHeight + 5,
+    x: block.crop_x,
+    y: block.crop_y,
+    width: block.crop_w,
+    height: block.crop_h,
   });
   const imageRef = useRef(null);
 

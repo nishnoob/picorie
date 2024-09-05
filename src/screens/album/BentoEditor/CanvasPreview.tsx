@@ -1,9 +1,9 @@
 import { Crop } from 'react-image-crop'
-
-const TO_RADIANS = Math.PI / 180
+import { Block } from '..';
 
 export async function canvasPreview(
   image: HTMLImageElement,
+  block: Block,
   canvas: HTMLCanvasElement,
   crop: Crop,
   scale = 1,
@@ -16,8 +16,8 @@ export async function canvasPreview(
     throw new Error('No 2d context')
   }
 
-  canvas.width = rowHeight;
-  canvas.height = rowHeight;
+  canvas.width = rowHeight * block.w;
+  canvas.height = rowHeight * block.h;
   const scaleX = canvas.width / image.width;
   const scaleY = canvas.height / image.height;
   // devicePixelRatio slightly increases sharpness on retina devices

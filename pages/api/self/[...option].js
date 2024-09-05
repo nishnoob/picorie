@@ -160,7 +160,7 @@ export default async (req, res) => {
    ) {
     try {
       Airtable
-        .base('appbo8nzfBdKwOEoo')('texts')
+        .base('appbo8nzfBdKwOEoo')('photos')
         .create([
           {
             fields: {
@@ -186,7 +186,7 @@ export default async (req, res) => {
    ) {
     try {
       Airtable
-        .base('appbo8nzfBdKwOEoo')('texts')
+        .base('appbo8nzfBdKwOEoo')('photos')
         .destroy([option?.[2]], function(err, deletedRecords) {
           if (err) {
             console.error(err);

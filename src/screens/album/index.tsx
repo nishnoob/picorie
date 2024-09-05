@@ -1,6 +1,5 @@
-import React, { use, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import fetcher from '../../utils/fetcher';
-import Navbar from '../../components/Navbar';
 import { useUser } from '@auth0/nextjs-auth0';
 import { BentoEditor } from './BentoEditor';
 import { LoaderIcon } from 'react-hot-toast';
@@ -11,7 +10,8 @@ export interface Block {
   y: number;
   w: number;
   h: number;
-  p_img: string;
+  text?: string;
+  p_img?: string;
   crop_x?: number;
   crop_y?: number;
   crop_w?: number;
@@ -50,6 +50,7 @@ const Album = ({ albumId }: { albumId: string }) => {
         crop_y: frame.crop_y,
         crop_w: frame.crop_w,
         crop_h: frame.crop_h,
+        text: frame.text || undefined
       }));
       setBlocks(blocksArray);
       isCreator.current = user?.email == data?.email;
@@ -75,6 +76,9 @@ const Album = ({ albumId }: { albumId: string }) => {
           isCreator={isCreator.current}
         />
       )}
+      <div className='h-96'>
+        {/* Footer */}
+      </div>
     </div>
   );
 };
