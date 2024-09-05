@@ -5,7 +5,7 @@ import { Block } from "..";
 import CropModule from "./CropModule";
 import CropPreview from "./CropPreview";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCrop, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { DeleteImageFromS3 } from "../imgeUpload";
 import fetcher from "../../../utils/fetcher";
 import toast from "react-hot-toast";
@@ -121,6 +121,14 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
   return (
     <div className='relative'>
       <div className="w-screen">
+        <h1 className="text-center font-extralight text-2xl pb-10 pt-12 tracking-wider">
+          <span className="font-extrabold text-[32px] mr-[1.5px]">
+            M
+          </span>
+          <span className=" text-[20px]">
+            idnight mass
+          </span>
+        </h1>
         <ResponsiveGridLayout
           className="layout "
           layout={blocks}
@@ -133,7 +141,11 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
           isDraggable={isCreator && isEditable}
         >
           {blocks.map((block, index) => (
-            <div key={block.i} data-grid={blocks[index]} className="border-[1px] border-neutral-200 drop-shadow-sm overflow-clip relative">
+            <div
+              key={block.i}
+              data-grid={blocks[index]}
+              className={`border-[1px] overflow-clip relative ${block.p_img || isEditable ? "border-neutral-200 drop-shadow-sm" : "border-transparent"}`}
+            >
               {block.p_img && (
                 <>
                   <img
@@ -159,32 +171,31 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
               )}
               {block.text && (
                 <div
-                  className="absolute top-0 left-0 w-full h-full bg-white p-2 text-black text-xl px-4 py-4 leading-snug"
+                  className="absolute top-0 left-0 w-full h-full  p-2 text-black text-xl px-4 py-4 leading-snug"
                   contentEditable={isCreator && !isEditable}
                   onBlur={(e) => handleTextUpdate(e, block)}
                   dangerouslySetInnerHTML={{ __html: block.text }}
                 />
               )}
               {isCreator && isEditable && !block.text && (
-                <div
+                <button
                   id="tile-button"
-                  className="absolute top-1 right-1 rounded-full bg-white border-[1px] border-neutral-500  drop-shadow-sm p-[6px]"
+                  className="absolute text-yellow-400 py-[5px] px-[7px] top-1 text-xs right-1 rounded-full bg-black  drop-shadow-sm"
                   onClick={(e) => { e.stopPropagation(); onSelectCropFile(block); }}
                 >
-                  <CropIcons />
-                  {/* <i className="fa-solid fa-crop"></i> */}
-                </div>
+                  <FontAwesomeIcon icon={faCrop} />
+                </button>
               )}
               {isCreator && isEditable && (
                 <div
                   id="tile-button"
-                  className="absolute top-1 left-1 rounded-full bg-white border-[1px] border-neutral-500  drop-shadow-sm px-[7px]"
+                  className="absolute -top-3 -left-3 rounded-full bg-red-700  drop-shadow-sm pl-[17px] pr-[11px] pt-[10px] pb-[3px]"
                   onClick={() => handleDelete(block)}
                 >
                   <FontAwesomeIcon
                     icon={faTrash}
-                    className="fas fa-check text-[11px] mb-[1.5px]"
-                    style={{ color: "red" }}
+                    className="fas fa-check text-[11px] mb-[0.5px]"
+                    style={{ color: "white" }}
                   />
                 </div>
               )}

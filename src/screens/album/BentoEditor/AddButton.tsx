@@ -3,7 +3,7 @@ import { Block } from "..";
 import fetcher from "../../../utils/fetcher";
 import toast from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faEye, faICursor, faImage, faPaintBrush } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/router";
 
 type Props = {
@@ -158,7 +158,7 @@ const AddButton = ({
   }
 
   const handleBack = () => {
-    if (window.history.length > 1) {
+    if (window.history.length > 2) {
       if (unsavedChanges) {
         toast.error('Please save your changes before leaving');
       } else {
@@ -170,57 +170,68 @@ const AddButton = ({
   }
 
   return (
-    <div className="fixed flex bottom-0 left-0 w-full px-2 pb-2 items-center">
-      <button onClick={handleBack} className="bg-black text-white py-3 px-4 drop-shadow-md">
-        <FontAwesomeIcon icon={faArrowLeft} />
-      </button>
+    <>
       {isCreator && (
-        <div className="flex w-min justify-center bg-yellow-500 shadow-sm p-2 gap-2">
-          {isEditable && (
-            <div className="">
-              <button
-                onClick={handleCreateButton}
-                className='h-min border-[2px] bg-transparent border-black font-bold px-2 py-1 text-sm whitespace-nowrap'
-              >
-                + pic
-              </button>
-              <input ref={inputRef} type='file' hidden onChange={onSelectFile} />
-            </div>
-          )}
-          {isEditable && (
-            <div className="">
-              <button
-                onClick={createTextBlock}
-                className='h-min border-[2px] bg-transparent border-black font-bold px-2 py-1 text-sm whitespace-nowrap'
-              >
-                + txt
-              </button>
-            </div>
-          )}
-          {unsavedChanges && (
-            <div>
-              <button
-                onClick={updateUnsavedChanges}
-                className='text-sm bg-black text-white px-4 py-1 border-[2px] border-black font-bold'
-              >
-                save
-              </button>
-            </div>
-          )}
-          <div className="flex border-2 border-black border-dashed px-2 py-1 items-center gap-2">
-            <div className="font-bold text-sm">edit</div>
-            <ToggleSwitch isChecked={isEditable} onUpdate={handleEditable} />
+        <div className="shadow-sm fixed top-2/3 right-0 mb-8 flex flex-col w-min ml-auto bg-yellow-500 border-black border-dashed px-1 py-1 items-center gap-3">
+          <div className="font-bold text-sm">
+            <FontAwesomeIcon icon={faEye}/>
+          </div>
+          <ToggleSwitch isChecked={isEditable} onUpdate={handleEditable} />
+          <div className="font-bold text-sm">
+            <FontAwesomeIcon icon={faPaintBrush}/>
           </div>
         </div>
       )}
-    </div>
+      <div className="fixed bottom-0 left-0 w-full">
+        <div className="flex items-center justify-between px-2 pb-2">
+          <button onClick={handleBack} className="bg-black text-white py-3 px-4 drop-shadow-md">
+            <FontAwesomeIcon icon={faArrowLeft} />
+          </button>
+          {((isCreator && isEditable) || unsavedChanges) && (
+            <div className="flex w-min justify-center bg-yellow-500 shadow-sm p-2 gap-2">
+              {isEditable && (
+                <div className="">
+                  <button
+                    onClick={handleCreateButton}
+                    className='h-min border-[2px] border-transparent bg-black font-bold px-2 py-[2px] text-md whitespace-nowrap text-yellow-500'
+                  >
+                    <FontAwesomeIcon icon={faImage} color=""/>
+                  </button>
+                  <input ref={inputRef} type='file' hidden onChange={onSelectFile} />
+                </div>
+              )}
+              {isEditable && (
+                <div className="">
+                  <button
+                    onClick={createTextBlock}
+                    className='h-min border-[2px] border-transparent bg-black font-bold px-3 py-1 text-sm whitespace-nowrap text-yellow-500'
+                  >
+                    <FontAwesomeIcon icon={faICursor} />
+                  </button>
+                </div>
+              )}
+              {unsavedChanges && (
+                <div>
+                  <button
+                    onClick={updateUnsavedChanges}
+                    className='text-sm bg-black text-white px-4 py-1 border-[2px] border-black font-bold'
+                  >
+                    save
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </>
   );
 };
 
 const ToggleSwitch = ({isChecked, onUpdate}) => {
   const [checked, setChecked] = useState<boolean>(isChecked);
   return (
-    <div className="inline-flex items-center">
+    <div className="inline-flex items-center rotate-90">
       <div className="relative inline-block w-8 h-4 rounded-full cursor-pointer">
         <input id="switch-component" type="checkbox"
           className=" w-8 h-4 transition-colors duration-300 rounded-full appearance-none cursor-pointer peer bg-blue-gray-100 checked:bg-gray-900 peer-checked:border-gray-900 peer-checked:before:bg-gray-900"
