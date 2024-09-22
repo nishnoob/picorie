@@ -35,6 +35,6 @@ export default function CropPreview({ img, block, crop, rowHeight }: {img: strin
     }
 
     if (!!crop && !!img) {
-        return <canvas ref={canvasRef} />;
+        return <canvas ref={canvasRef} width={block.w * rowHeight} height={block.h * rowHeight} />;
     }
 }

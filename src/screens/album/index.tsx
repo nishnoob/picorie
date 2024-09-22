@@ -16,6 +16,8 @@ export interface Block {
   crop_y?: number;
   crop_w?: number;
   crop_h?: number;
+  crop_scale_x?: number;
+  crop_scale_y?: number;
 }
 
 const Album = ({ albumId }: { albumId: string }) => {
@@ -50,6 +52,8 @@ const Album = ({ albumId }: { albumId: string }) => {
         crop_y: frame.crop_y,
         crop_w: frame.crop_w,
         crop_h: frame.crop_h,
+        crop_scale_x: frame.crop_scale_x,
+        crop_scale_y: frame.crop_scale_y,
         text: frame.text || undefined
       }));
       setBlocks(blocksArray);

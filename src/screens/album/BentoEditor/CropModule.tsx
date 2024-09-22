@@ -39,6 +39,16 @@ const CropModule = ({
     setCrop(crop);
   };
 
+  const returnCropScale = () => {
+    const scaleX = imageRef.current.naturalWidth / imageRef.current.width;
+    const scaleY = imageRef.current.naturalHeight / imageRef.current.height;
+
+    return {
+      crop_scale_x: scaleX,
+      crop_scale_y: scaleY
+    };
+  }
+
   const onCancel = () => {
     setCropBlock({
       i: "",
@@ -110,7 +120,8 @@ const CropModule = ({
       crop_x: crop.x,
       crop_y: crop.y,
       crop_w: crop.width,
-      crop_h: crop.height
+      crop_h: crop.height,
+      ...returnCropScale()
     };
     let res = await fetcher('/self/photo/save', { method: 'POST', body: dataObj });
     if (res?.[0]?.id) {
@@ -124,7 +135,9 @@ const CropModule = ({
         crop_x: crop.x,
         crop_y: crop.y,
         crop_w: crop.width,
-        crop_h: crop.height
+        crop_h: crop.height,
+        crop_scale_x: returnCropScale().crop_scale_x,
+        crop_scale_y: returnCropScale().crop_scale_y
       };
       setBlocks((prev) => [
         ...prev,
@@ -223,7 +236,8 @@ const CropModule = ({
           crop_x: crop.x,
           crop_y: crop.y,
           crop_w: crop.width,
-          crop_h: crop.height
+          crop_h: crop.height,
+          ...returnCropScale()
         }
       }
     )

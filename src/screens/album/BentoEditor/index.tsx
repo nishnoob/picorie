@@ -144,7 +144,7 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
             <div
               key={block.i}
               data-grid={blocks[index]}
-              className={`border-[1px] overflow-clip relative ${block.p_img || isEditable ? "border-neutral-200 drop-shadow-sm" : "border-transparent"}`}
+              className={`border-[1px] relative ${block.p_img || isEditable ? "border-neutral-200 drop-shadow-sm" : "border-transparent"}`}
             >
               {block.p_img && (
                 <>
@@ -171,7 +171,7 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
               )}
               {block.text && (
                 <div
-                  className="absolute top-0 left-0 w-full h-full  p-2 text-black text-xl px-4 py-4 leading-snug"
+                  className="absolute top-0 left-0 w-full h-full p-2 text-black text-xl px-4 py-4 leading-snug"
                   contentEditable={isCreator && !isEditable}
                   onBlur={(e) => handleTextUpdate(e, block)}
                   dangerouslySetInnerHTML={{ __html: block.text }}
@@ -227,11 +227,5 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
     </div>
   );
 }
-
-const CropIcons = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" className="bi bi-crop" viewBox="0 0 16 16">
-    <path d="M3.5.5A.5.5 0 0 1 4 1v13h13a.5.5 0 0 1 0 1h-2v2a.5.5 0 0 1-1 0v-2H3.5a.5.5 0 0 1-.5-.5V4H1a.5.5 0 0 1 0-1h2V1a.5.5 0 0 1 .5-.5m2.5 3a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V4H6.5a.5.5 0 0 1-.5-.5"/>
-  </svg>
-);
 
 export { BentoEditor };
