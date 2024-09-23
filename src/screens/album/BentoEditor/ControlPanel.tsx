@@ -18,7 +18,7 @@ type Props = {
   isCreator: boolean;
 }
 
-const AddButton = ({
+const ControlPanel = ({
   unsavedChanges,
   savedBlocks,
   blocks,
@@ -253,4 +253,4 @@ const ToggleSwitch = ({isChecked, onUpdate}) => {
   );
 };
 
-export default AddButton;
+export default ControlPanel;

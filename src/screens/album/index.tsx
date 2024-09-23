@@ -4,6 +4,7 @@ import { useUser } from '@auth0/nextjs-auth0';
 import { BentoEditor } from './BentoEditor';
 import { LoaderIcon } from 'react-hot-toast';
 
+// TODO: Match it with BE table structure
 export interface Block {
   i: string;
   x: number;
@@ -20,19 +21,16 @@ export interface Block {
 }
 
 const Album = ({ albumId }: { albumId: string }) => {
-  // TODO: protect with email
   const { user, isLoading } = useUser();
-
   const [isFetching, setIsFetching] = useState(true);
   const [blocks, setBlocks] = useState<Block[]>([]);
-  
   const isCreator = useRef(false);
 
   useEffect(() => {
     if (albumId && !isLoading) {
       fetchAlbumData();
     }
-  }, [albumId, isLoading]);
+  }, [isLoading]);
 
   const fetchAlbumData = async () => {
     setIsFetching(true);
@@ -44,17 +42,16 @@ const Album = ({ albumId }: { albumId: string }) => {
         y: frame.y,
         w: frame.w,
         h: frame.h,
-        p_img: frame.url,
-        cropped_img: frame.cropped_url,
-        maxW: 2,
-        maxH: 2,
+        text: frame.text || undefined,
+        p_img: frame.url || undefined,
+        cropped_img: frame.cropped_url || undefined,
         crop_x: frame.crop_x,
         crop_y: frame.crop_y,
         crop_w: frame.crop_w,
         crop_h: frame.crop_h,
-        crop_scale_x: frame.crop_scale_x,
-        crop_scale_y: frame.crop_scale_y,
-        text: frame.text || undefined
+        // TODO: Set maxW, maxH in parent component as default
+        maxW: 2,
+        maxH: 2,
       }));
       setBlocks(blocksArray);
       isCreator.current = user?.email == data?.email;

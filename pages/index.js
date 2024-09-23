@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import { useUser } from '@auth0/nextjs-auth0';
 import { useRouter } from 'next/router';
-import Component from '../src/screens';
-import { isServer } from '../src/utils';
+import Component from '../src/screens/Login';
 
 const HomePage = () => {
   const { user, isLoading } = useUser();

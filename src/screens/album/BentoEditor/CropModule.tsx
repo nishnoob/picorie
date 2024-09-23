@@ -10,7 +10,6 @@ type Props = {
   albumId: string;
   block: Block;
   setCropBlock: Dispatch<SetStateAction<Block>>;
-  rowHeight: number;
   setBlocks: Dispatch<SetStateAction<Block[]>>;
   savedBlocks: React.MutableRefObject<Block[]>;
 };
@@ -19,16 +18,15 @@ const CropModule = ({
   albumId,
   block,
   setCropBlock,
-  rowHeight,
   setBlocks,
   savedBlocks
 }: Props) => {
   const [crop, setCrop] = useState<Crop>({
     unit: "px",
-    x: block.x || 0,
-    y: block.y || 0,
-    width: (block.w * rowHeight),
-    height: (block.h * rowHeight),
+    x: block.crop_x || 0,
+    y: block.crop_y || 0,
+    width: block.crop_w || 50,
+    height: block.crop_h || 50
   });
   const imageRef = useRef(null);
 
@@ -74,14 +72,6 @@ const CropModule = ({
 
   const makeClientCrop = async () => {
     if (imageRef.current && crop.width && crop.height) {
-      // const croppedImageUrl = await getCroppedImg(
-      //   imageRef.current,
-      //   crop,
-      //   "newFile.jpeg"
-      // );
-      // if (!croppedImageUrl) {
-      //   return;
-      // }
       if (isThisNewBlock()) {
         const epoch = `_uploads_/${Date.now()}`;
         // upload OG image to S3
@@ -255,11 +245,6 @@ const CropModule = ({
       {
         method: 'POST',
         body: {
-          url: block.p_img,
-          x: block.x,
-          y: block.y,
-          w: block.w,
-          h: block.h,
           crop_x: crop.x,
           crop_y: crop.y,
           crop_w: crop.width,
