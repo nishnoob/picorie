@@ -12,12 +12,11 @@ export interface Block {
   h: number;
   text?: string;
   p_img?: string;
+  cropped_img?: string;
   crop_x?: number;
   crop_y?: number;
   crop_w?: number;
   crop_h?: number;
-  crop_scale_x?: number;
-  crop_scale_y?: number;
 }
 
 const Album = ({ albumId }: { albumId: string }) => {
@@ -46,6 +45,7 @@ const Album = ({ albumId }: { albumId: string }) => {
         w: frame.w,
         h: frame.h,
         p_img: frame.url,
+        cropped_img: frame.cropped_url,
         maxW: 2,
         maxH: 2,
         crop_x: frame.crop_x,

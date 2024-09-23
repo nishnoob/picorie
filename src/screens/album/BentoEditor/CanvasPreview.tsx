@@ -26,10 +26,10 @@ export async function canvasPreview(
   ctx.save()
   ctx.drawImage(
     image,
-    crop.x * block.crop_scale_x,
-    crop.y * block.crop_scale_y,
-    (crop.x * block.crop_scale_x) + (crop.width * block.crop_scale_x),
-    (crop.y * block.crop_scale_y) + (crop.height * block.crop_scale_y),
+    crop.x ,
+    crop.y ,
+    (crop.x ) + (crop.width ),
+    (crop.y ) + (crop.height ),
     0,
     0,
     canvas.width,

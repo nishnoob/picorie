@@ -4,6 +4,7 @@ import ReactCrop, { Crop } from "react-image-crop";
 import 'react-image-crop/dist/ReactCrop.css'
 import fetcher from "../../../utils/fetcher";
 import { UploadImageToS3 } from "../imgeUpload";
+import toast from "react-hot-toast";
 
 type Props = {
   albumId: string;
@@ -24,10 +25,10 @@ const CropModule = ({
 }: Props) => {
   const [crop, setCrop] = useState<Crop>({
     unit: "px",
-    x: block.crop_x,
-    y: block.crop_y,
-    width: block.crop_w,
-    height: block.crop_h,
+    x: block.x || 0,
+    y: block.y || 0,
+    width: (block.w * rowHeight),
+    height: (block.h * rowHeight),
   });
   const imageRef = useRef(null);
 
@@ -38,16 +39,6 @@ const CropModule = ({
   const onCropChange = (crop) => {
     setCrop(crop);
   };
-
-  const returnCropScale = () => {
-    const scaleX = imageRef.current.naturalWidth / imageRef.current.width;
-    const scaleY = imageRef.current.naturalHeight / imageRef.current.height;
-
-    return {
-      crop_scale_x: scaleX,
-      crop_scale_y: scaleY
-    };
-  }
 
   const onCancel = () => {
     setCropBlock({
@@ -74,6 +65,13 @@ const CropModule = ({
     return true;
   };
 
+  const getEpochFromUrl = (url: string) => {
+    const arr = url.split('/');
+    const last = arr[arr.length - 1];
+    const epoch = last.split('.')[0];
+    return epoch.replace('_cropped', '');
+  }
+
   const makeClientCrop = async () => {
     if (imageRef.current && crop.width && crop.height) {
       // const croppedImageUrl = await getCroppedImg(
@@ -85,33 +83,64 @@ const CropModule = ({
       //   return;
       // }
       if (isThisNewBlock()) {
-        const epoch = `_uploads_/${Date.now()}.jpeg`;
+        const epoch = `_uploads_/${Date.now()}`;
+        // upload OG image to S3
         UploadImageToS3(
           block.p_img,
-          epoch,
-          () => saveNewBlockToBE(epoch, block.p_img),
+          `${epoch}.jpeg`,
+          () => {
+            // upload cropped image to S3
+            getCroppedImg(
+              imageRef.current,
+              crop,
+              "newFile.jpeg"
+            ).then((res) => {
+              UploadImageToS3(
+                res as string,
+                `${epoch}_cropped.jpeg`,
+                () => {
+                  saveNewBlockToBE(epoch);
+                }
+              );
+            });
+          },
         );
       } else {
-        setCropBlock((state: Block) => {
-          searchAndUpdateBlock({
-            ...state
-          } as Block);
-          return({
-            i: "",
-            x: 0,
-            y: 0,
-            w: 1,
-            h: 1,
-            p_img: ""
-          });
+        const epoch = `_uploads_/${getEpochFromUrl(block.p_img)}`;
+        getCroppedImg(
+          imageRef.current,
+          crop,
+          "newFile.jpeg"
+        ).then((res) => {
+          UploadImageToS3(
+            res as string,
+            `${epoch}_cropped.jpeg`,
+            () => {
+              // saveNewBlockToBE(epoch, block.p_img, res as string);
+              setCropBlock((state: Block) => {
+                searchAndUpdateBlock({
+                  ...state,
+                } as Block);
+                return({
+                  i: "",
+                  x: 0,
+                  y: 0,
+                  w: 1,
+                  h: 1,
+                  p_img: ""
+                });
+              });
+            }
+          );
         });
       }
     }
   }
 
-  const saveNewBlockToBE = async (epoch, img) => {
+  const saveNewBlockToBE = async (epoch) => {
     const dataObj = {
-      url: `https://s3.ap-south-1.amazonaws.com/picorie-assets/${epoch}`,
+      url: `https://s3.ap-south-1.amazonaws.com/picorie-assets/${epoch}.jpeg`,
+      cropped_url: `https://s3.ap-south-1.amazonaws.com/picorie-assets/${epoch}_cropped.jpeg`,
       album_id: [albumId],
       x: 0,
       y: 0,
@@ -121,7 +150,6 @@ const CropModule = ({
       crop_y: crop.y,
       crop_w: crop.width,
       crop_h: crop.height,
-      ...returnCropScale()
     };
     let res = await fetcher('/self/photo/save', { method: 'POST', body: dataObj });
     if (res?.[0]?.id) {
@@ -131,13 +159,12 @@ const CropModule = ({
         y: 0,
         w: 1,
         h: 1,
-        p_img: img,
+        p_img: dataObj.url,
+        cropped_img: dataObj.cropped_url,
         crop_x: crop.x,
         crop_y: crop.y,
         crop_w: crop.width,
         crop_h: crop.height,
-        crop_scale_x: returnCropScale().crop_scale_x,
-        crop_scale_y: returnCropScale().crop_scale_y
       };
       setBlocks((prev) => [
         ...prev,
@@ -153,9 +180,9 @@ const CropModule = ({
         y: 0,
         w: 1,
         h: 1,
-        p_img: ""
+        p_img: "",
       });
-      // toast.success("picture saved!");
+      toast.success("picture saved!");
     }
   }
 
@@ -208,7 +235,6 @@ const CropModule = ({
         if (b.i === block.i) {
           const arr = {
             ...block,
-            p_img: block.p_img,
             crop_x: crop.x,
             crop_y: crop.y,
             crop_w: crop.width,
@@ -220,6 +246,7 @@ const CropModule = ({
         return b;
       });
     });
+    toast.success("picture updated!");
   }
 
   const updateAndSaveToBE = () => {
@@ -237,7 +264,6 @@ const CropModule = ({
           crop_y: crop.y,
           crop_w: crop.width,
           crop_h: crop.height,
-          ...returnCropScale()
         }
       }
     )
@@ -255,7 +281,7 @@ const CropModule = ({
             aspect={crop.width/crop.height}
             className="w-2/3 mx-auto"
           >
-            <img ref={imageRef} src={block.p_img} alt="img" />
+            <img ref={imageRef} src={block.p_img} alt="img" crossOrigin="anonymous"/>
           </ReactCrop>
         </div>
         <div className="flex w-full gap-2 mt-4 pb-2 px-2">

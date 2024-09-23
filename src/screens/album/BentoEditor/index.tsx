@@ -77,24 +77,28 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
 
   const handleDelete = async (block: Block) => {
     if (confirm("Want to delete?")) {
-      let splitUrl = block.p_img.split('/');
-      const filepath_S3 = `${splitUrl[splitUrl.length - 2]}/${splitUrl[splitUrl.length - 1]}`
-      DeleteImageFromS3(
-        filepath_S3,
-        async () => {
-          let res = await fetcher(`/self/photo/delete/${block.i}`, { method: 'POST' });
-          if (res?.deleted) {
-            setBlocks(state => {
-              const index = state.findIndex(block => block.i === block.i);
-              const newState = [...state];
-              newState.splice(index, 1);
-              return newState;
-            });
-            savedBlocks.current = savedBlocks.current.filter(block => block.i !== cropBlock.i);
-            toast.success("photo deleted!");
-          }
-        },
-      );
+      if (block.p_img) {
+        let splitUrl = block.p_img.split('/');
+        const filepath_S3 = `${splitUrl[splitUrl.length - 2]}/${splitUrl[splitUrl.length - 1]}`
+        DeleteImageFromS3(
+          filepath_S3,
+          async () => {
+            let res = await fetcher(`/self/photo/delete/${block.i}`, { method: 'POST' });
+            if (res?.deleted) {
+              setBlocks(state => state.filter(bl => bl.i !== block.i));
+              savedBlocks.current = savedBlocks.current.filter(block => block.i !== cropBlock.i);
+              toast.success("photo deleted!");
+            }
+          },
+        );
+      } else {
+        let res = await fetcher(`/self/photo/delete/${block.i}`, { method: 'POST' });
+        if (res?.deleted) {
+          setBlocks(state => state.filter(bl => bl.i !== block.i));
+          savedBlocks.current = savedBlocks.current.filter(block => block.i !== cropBlock.i);
+          toast.success("text deleted!");
+        }
+      }
     }
   }
 
@@ -121,14 +125,14 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
   return (
     <div className='relative'>
       <div className="w-screen">
-        <h1 className="text-center font-extralight text-2xl pb-10 pt-12 tracking-wider">
+        {/* <h1 className="text-center font-extralight text-2xl pb-10 pt-12 tracking-wider">
           <span className="font-extrabold text-[32px] mr-[1.5px]">
             M
           </span>
           <span className=" text-[20px]">
             idnight mass
           </span>
-        </h1>
+        </h1> */}
         <ResponsiveGridLayout
           className="layout "
           layout={blocks}
@@ -150,22 +154,10 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
                 <>
                   <img
                   // TODO: do we need this?
-                    src={block.p_img}
+                    src={block.cropped_img||block.p_img}
                     alt="img"
-                    className="absolute top-0 left-0 w-full h-full object-cover opacity-0"
+                    className="absolute top-0 left-0 w-full h-full object-cover"
                     id={`img-${block.i}`}
-                  />
-                  <CropPreview
-                    img={block.p_img}
-                    block={block}
-                    rowHeight={rowHeight}
-                    crop={{
-                      unit: "px",
-                      x: block.crop_x || 0,
-                      y: block.crop_y || 0,
-                      width: block.crop_w || rowHeight,
-                      height: block.crop_h || rowHeight,
-                    }}
                   />
                 </>
               )}
