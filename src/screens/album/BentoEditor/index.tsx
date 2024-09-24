@@ -20,7 +20,7 @@ interface Props {
 const ResponsiveGridLayout = WidthProvider(GridLayout);
 
 const NUM_OF_COLUMNS = 2;
-const ROW_HEIGHT = (typeof window !== "undefined" ? window.innerWidth : 300) / NUM_OF_COLUMNS - 15;
+export const ROW_HEIGHT = (typeof window !== "undefined" ? window.innerWidth : 300) / NUM_OF_COLUMNS - 15;
 
 const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
   const savedBlocks = useRef<Block[]>(blocks);
@@ -61,7 +61,11 @@ const BentoEditor = ({ albumId, blocks, setBlocks, isCreator }: Props) => {
           x: block.x,
           y: block.y,
           w: block.w,
-          h: block.h
+          h: block.h,
+          crop_x: block.x,
+          crop_y: block.y,
+          crop_w: block.w * ROW_HEIGHT,
+          crop_h: block.h * ROW_HEIGHT,
         };
       });
       return blocksArray;

@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { Block } from "..";
 import ReactCrop, { Crop } from "react-image-crop";
 import 'react-image-crop/dist/ReactCrop.css'
@@ -184,9 +184,12 @@ const CropModule = ({
     const canvas = document.createElement("canvas");
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
-    canvas.width = crop.width;
-    canvas.height = crop.height;
+    const pixelRatio = window.devicePixelRatio;
+    canvas.width = Math.ceil(crop.width * scaleX * pixelRatio);
+    canvas.height = Math.ceil(crop.height * scaleY * pixelRatio);
     const ctx = canvas.getContext("2d");
+    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    ctx.imageSmoothingQuality = "high";
     // console.log("ctx", crop);
     if (!ctx) return Promise.resolve("");
     ctx.drawImage(
@@ -197,8 +200,8 @@ const CropModule = ({
       crop.height * scaleY,
       0,
       0,
-      crop.width,
-      crop.height
+      crop.width * scaleX,
+      crop.height * scaleY
     );
 
     return new Promise((resolve, reject) => {
@@ -215,7 +218,7 @@ const CropModule = ({
           resolve(reader.result);
         }
         reader.readAsDataURL(blob);
-      }, "image/jpeg");
+      }, "image/jpeg", 0.8);
     });
   }
 
@@ -264,6 +267,7 @@ const CropModule = ({
             ruleOfThirds
             onChange={onCropChange}
             aspect={crop.width/crop.height}
+            keepSelection={true}
             className="w-2/3 mx-auto"
           >
             <img ref={imageRef} src={block.p_img} alt="img" crossOrigin="anonymous"/>

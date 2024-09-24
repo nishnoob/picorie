@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faEye, faICursor, faImage, faPaintBrush } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/router";
+import { ROW_HEIGHT } from ".";
 
 type Props = {
   unsavedChanges: boolean;
@@ -99,6 +100,10 @@ const ControlPanel = ({
         y: block.y,
         w: block.w,
         h: block.h,
+        crop_x: block.x,
+        crop_y: block.y,
+        crop_w: block.w * ROW_HEIGHT,
+        crop_h: block.h * ROW_HEIGHT,
       }
       if (block.text) {
         retObj = {
